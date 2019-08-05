@@ -2,7 +2,7 @@ package com.project.quiz.evaluate.web.control;
 
 import com.project.quiz.common.WebResult;
 import com.project.quiz.evaluate.service.RewardService;
-import com.project.quiz.evaluate.web.control.req.CumulativeReq;
+import com.project.quiz.evaluate.web.req.CumulativeReq;
 import io.swagger.annotations.*;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;

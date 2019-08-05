@@ -27,6 +27,8 @@ import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
 
+import static com.project.quiz.web.vo.ValideSortVo.valideSort;
+
 /**
  * @Description:
  * @author: liu zhenming
@@ -132,6 +134,7 @@ public abstract class BaseProblemSetController<T extends ProblemSet, R extends Q
             @ApiImplicitParam(value = "sort", name = "排序方式", dataType = "int", example = "1")
     })
     public Mono<WebResult> findProblemSet(@Valid @ApiParam(name = "sortVo", value = "题目分页查询", required = true) @RequestBody ProblemSetReq sortVo) {
+        valideSort(sortVo.getPage(), sortVo.getSize());
         return service.findProblemSet(sortVo).collectList().map(WebResult::okResult);
     }
 
@@ -199,6 +202,7 @@ public abstract class BaseProblemSetController<T extends ProblemSet, R extends Q
     })
     @ApiOperation(value = "通过id查找题集及包含的题目全部信息", notes = "通过id查找题集及包含的题目全部信息")
     public Mono<WebResult> questionProblemSetReq(@Valid @RequestBody QuestionProblemSetReq questionProblemSetReq) {
+        valideSort(questionProblemSetReq.getPage(), questionProblemSetReq.getSize());
         return service.questionProblemSet(questionProblemSetReq).map(WebResult::okResult);
     }
 }

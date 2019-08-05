@@ -17,18 +17,18 @@ import static java.util.stream.Collectors.joining;
 /**
  * 当前课堂已发布的题目列表
  */
-@Slf4j
-@Service
-public class FabuQuestService {
+//@Slf4j
+//@Service
+//public class FabuQuestService {
 
-    private final ReactiveStringRedisTemplate stringRedisTemplate;
-    private final ReactiveHashOperations<String, String, String> reactiveHashOperations;
-
-    public FabuQuestService(ReactiveStringRedisTemplate stringRedisTemplate,
-                            ReactiveHashOperations<String, String, String> reactiveHashOperations) {
-        this.stringRedisTemplate = stringRedisTemplate;
-        this.reactiveHashOperations = reactiveHashOperations;
-    }
+//    private final ReactiveStringRedisTemplate stringRedisTemplate;
+//    private final ReactiveHashOperations<String, String, String> reactiveHashOperations;
+//
+//    public FabuQuestService(ReactiveStringRedisTemplate stringRedisTemplate,
+//                            ReactiveHashOperations<String, String, String> reactiveHashOperations) {
+//        this.stringRedisTemplate = stringRedisTemplate;
+//        this.reactiveHashOperations = reactiveHashOperations;
+//    }
 
     /**
      * 获得当前题目活动列表
@@ -36,16 +36,16 @@ public class FabuQuestService {
      * @param circleId 课堂编号
      * @return
      */
-    public Mono<List<Object>> getFaBuQuestNow(final String circleId) {
-        //获得已经发布的题目列表
-        Mono<List<String>> faBuList = reactiveHashOperations.get((SingleQueKey.questionsIdNow(circleId)), "questionType")
-                .flatMap(qtype -> stringRedisTemplate.opsForSet().members(SingleQueKey.askTypeQuestionsId(qtype, circleId))
-                        .collectList());
-        //获得当前题目的ID
-        Mono<String> nowQuest = reactiveHashOperations.get(SingleQueKey.questionsIdNow(circleId), "questionId");
-
-        return Flux.concat(faBuList, nowQuest).collectList();
-    }
+//    public Mono<List<Object>> getFaBuQuestNow(final String circleId) {
+//        //获得已经发布的题目列表
+//        Mono<List<String>> faBuList = reactiveHashOperations.get((SingleQueKey.questionsIdNow(circleId)), "questionType")
+//                .flatMap(qtype -> stringRedisTemplate.opsForSet().members(SingleQueKey.askTypeQuestionsId(qtype, circleId))
+//                        .collectList());
+//        //获得当前题目的ID
+//        Mono<String> nowQuest = reactiveHashOperations.get(SingleQueKey.questionsIdNow(circleId), "questionId");
+//
+//        return Flux.concat(faBuList, nowQuest).collectList();
+//    }
 
 //    /**
 //     * 当前题目收到推送后，删除未收到推送标记的学生ID
@@ -77,12 +77,12 @@ public class FabuQuestService {
      * @param filterStr
      * @return
      */
-    private String getSelected(String str, String filterStr) {
-        return Arrays.stream(str.split(","))
-                .filter(id -> !id.equals(filterStr))
-                .filter(Objects::nonNull)
-                .map(str1 -> str1.concat(","))
-                .collect(joining());
-    }
+//    private String getSelected(String str, String filterStr) {
+//        return Arrays.stream(str.split(","))
+//                .filter(id -> !id.equals(filterStr))
+//                .filter(Objects::nonNull)
+//                .map(str1 -> str1.concat(","))
+//                .collect(joining());
+//    }
 
-}
+//}

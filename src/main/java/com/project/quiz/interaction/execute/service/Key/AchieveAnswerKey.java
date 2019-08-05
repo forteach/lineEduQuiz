@@ -21,7 +21,7 @@ public class AchieveAnswerKey {
     /**
      * 推送操作
      */
-    public static final String ASK_PULL = "Pull";
+//    public static final String ASK_PULL = "Pull";
 
     //抢答
     public static final String ASK_INTERACTIVE_RACE = "race";

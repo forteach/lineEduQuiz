@@ -26,7 +26,7 @@ public class MoreQueKey {
     /**
      * 互动方式为练习
      */
-    public static final String CLASSROOM_BOOK_QUESTIONS_ID = "Book";
+//    public static final String CLASSROOM_BOOK_QUESTIONS_ID = "Book";
 
     /**
      * 加入课堂，已推送过得学生回答

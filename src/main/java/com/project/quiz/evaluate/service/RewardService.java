@@ -5,7 +5,7 @@ import com.mongodb.client.result.UpdateResult;
 import com.project.quiz.evaluate.config.RewardKey;
 import com.project.quiz.evaluate.domain.Reward;
 import com.project.quiz.evaluate.repository.RewardRepository;
-import com.project.quiz.evaluate.web.control.res.CumulativeRes;
+import com.project.quiz.evaluate.web.res.CumulativeRes;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;

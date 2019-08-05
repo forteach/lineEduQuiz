@@ -13,7 +13,7 @@ import com.project.quiz.common.MyAssert;
 import com.project.quiz.domain.BaseEntity;
 import com.project.quiz.evaluate.domain.QuestionExerciseReward;
 import com.project.quiz.evaluate.service.RewardService;
-import com.project.quiz.evaluate.web.control.res.CumulativeRes;
+import com.project.quiz.evaluate.web.res.CumulativeRes;
 import com.project.quiz.practiser.domain.AnswerLists;
 import com.project.quiz.practiser.domain.ExerciseAnswerQuestionBook;
 import com.project.quiz.practiser.web.req.AddRewardReq;

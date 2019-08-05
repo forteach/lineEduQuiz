@@ -17,7 +17,7 @@ public class SingleQueKey {
     /**
      * 互动提问hash前缀(习题库\头脑风暴等。。。)
      */
-    public static final String CLASSROOM_ASK_PRVE = "Prve";
+//    public static final String CLASSROOM_ASK_PRVE = "Prve";
 
     /**
      * 互动方式为提问
@@ -53,39 +53,39 @@ public class SingleQueKey {
      *
      * @return 上一次的问题前缀+课堂+问题类型+回答方式=ForValu
      */
-    public static String askTypeQuestionsIdPrve(final String questType,final String circleId,final String interactive) {
-        return askTypeQuestionsId(questType,circleId,interactive).concat(CLASSROOM_ASK_PRVE);
-    }
+//    public static String askTypeQuestionsIdPrve(final String questType,final String circleId,final String interactive) {
+//        return askTypeQuestionsId(questType,circleId,interactive).concat(CLASSROOM_ASK_PRVE);
+//    }
 
     /**
      * 课堂题目当前前缀
      *
      * @return 当前问题前缀+课堂+问题类型+回答方式=ForValue
      */
-    public static String askTypeQuestionsIdNow(final String questionType, String circleId, String interactive) {
-        return  askTypeQuestionsId(questionType, circleId, interactive).concat(CLASSROOM_ASK_NOW);
-    }
-
-    /**
-     * 课堂互动前缀
-     *
-     * @return 问题前缀+课堂+问题类型  题目列表set
-     */
-    public static String askTypeQuestionsId(final String questType,final String circleId) {
-        return circleId.concat(CLASSROOM_ASK_QUESTIONS_ID).concat(questType);
-    }
+//    public static String askTypeQuestionsIdNow(final String questionType, String circleId, String interactive) {
+//        return  askTypeQuestionsId(questionType, circleId, interactive).concat(CLASSROOM_ASK_NOW);
+//    }
+//
+//    /**
+//     * 课堂互动前缀
+//     *
+//     * @return 问题前缀+课堂+问题类型  题目列表set
+//     */
+//    public static String askTypeQuestionsId(final String questType,final String circleId) {
+//        return circleId.concat(CLASSROOM_ASK_QUESTIONS_ID).concat(questType);
+//    }
 
     /**
      * 课堂互动前缀
      *
      * @return 问题前缀+课堂+问题类型+回答方式  题目列表List
      */
-    public static String askTypeQuestionsId(final String questionType, String circleId, String interactive) {
-        return circleId.concat(SingleQueKey.CLASSROOM_ASK_QUESTIONS_ID).concat(questionType.concat(interactive));
-    }
-
-    public static String cleanTuiSong(String circleId,String questionId,String interactive,String pushType,String questionType){
-         return circleId.concat(questionId).concat(interactive).concat(ROOM_JOIN_SINGLE_TS).concat(questionType).concat(pushType);
-    }
+//    public static String askTypeQuestionsId(final String questionType, String circleId, String interactive) {
+//        return circleId.concat(SingleQueKey.CLASSROOM_ASK_QUESTIONS_ID).concat(questionType.concat(interactive));
+//    }
+//
+//    public static String cleanTuiSong(String circleId,String questionId,String interactive,String pushType,String questionType){
+//         return circleId.concat(questionId).concat(interactive).concat(ROOM_JOIN_SINGLE_TS).concat(questionType).concat(pushType);
+//    }
 
 }

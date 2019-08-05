@@ -23,6 +23,8 @@ import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
 
+import static com.project.quiz.web.vo.ValideSortVo.valideSort;
+
 /**
  * @Description: 题目结构的通用Controller
  * @author: liu zhenming
@@ -70,6 +72,7 @@ public abstract class BaseQuestionController<T extends QuestionExamEntity> {
             @ApiImplicitParam(value = "sort", name = "排序方式", dataType = "int", example = "1")
     })
     public Mono<WebResult> findAllDetailed(@Valid @ApiParam(name = "sortVo", value = "题目分页查询", required = true) @RequestBody QuestionBankReq sortVo) {
+        valideSort(sortVo.getPage(), sortVo.getSize());
         return service.findAllDetailed(sortVo).collectList().map(WebResult::okResult);
     }
 
