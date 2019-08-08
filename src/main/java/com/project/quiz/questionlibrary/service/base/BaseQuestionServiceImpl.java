@@ -1,10 +1,11 @@
 package com.project.quiz.questionlibrary.service.base;
 
 
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
-import com.project.quiz.common.DataUtil;
 import com.project.quiz.exceptions.CustomException;
 import com.project.quiz.exceptions.ExamQuestionsException;
 import com.project.quiz.exceptions.ProblemSetException;
@@ -23,12 +24,10 @@ import reactor.core.publisher.Mono;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.project.quiz.common.Dic.*;
-import static com.project.quiz.util.StringUtil.isNotEmpty;
 
 /**
  * @Description: Question 结构的通用实现
@@ -79,7 +78,7 @@ public abstract class BaseQuestionServiceImpl<T extends QuestionExamEntity> impl
      */
     @Override
     public Mono<T> editQuestions(final T bigQuestion) {
-        bigQuestion.setUDate(DataUtil.format(new Date()));
+        bigQuestion.setUDate(DateUtil.now());
         if (bigQuestion.getRelate() == COVER_QUESTION_BANK) {
             return editQuestionsCover(bigQuestion);
         }
@@ -248,16 +247,16 @@ public abstract class BaseQuestionServiceImpl<T extends QuestionExamEntity> impl
 
         Criteria criteria = Criteria.where("teacherId").is(sortVo.getOperatorId());
 
-        if (isNotEmpty(sortVo.getLevelId())) {
+        if (StrUtil.isNotEmpty(sortVo.getLevelId())) {
             criteria.and("levelId").is(sortVo.getLevelId());
         }
-        if (isNotEmpty(sortVo.getChapterId())) {
+        if (StrUtil.isNotEmpty(sortVo.getChapterId())) {
             criteria.and("chapterId").is(sortVo.getChapterId());
         }
-        if (isNotEmpty(sortVo.getKnowledgeId())) {
+        if (StrUtil.isNotEmpty(sortVo.getKnowledgeId())) {
             criteria.and("knowledgeId").is(sortVo.getKnowledgeId());
         }
-        if (isNotEmpty(sortVo.getQuestionType())) {
+        if (StrUtil.isNotEmpty(sortVo.getQuestionType())) {
             criteria.and("examChildren.examType").is(sortVo.getQuestionType());
         }
         if (sortVo.getKeyword() != null && sortVo.getKeyword().length > 0) {

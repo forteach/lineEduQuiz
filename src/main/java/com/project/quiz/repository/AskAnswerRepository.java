@@ -1,6 +1,6 @@
 package com.project.quiz.repository;
 
-import com.project.quiz.interaction.execute.domain.AskAnswer;
+import com.project.quiz.interaction.domain.AskAnswer;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 
 /**

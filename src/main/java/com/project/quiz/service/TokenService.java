@@ -1,5 +1,6 @@
 package com.project.quiz.service;
 
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -7,7 +8,6 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.project.quiz.common.DefineCode;
 import com.project.quiz.common.MyAssert;
-import com.project.quiz.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -137,7 +137,7 @@ public class TokenService {
      */
     private String getToken(ServerRequest request){
         AtomicReference<String> token = new AtomicReference<>(request.exchange().getRequest().getHeaders().getFirst("token"));
-        if (StringUtil.isEmpty(token.get())){
+        if (StrUtil.isEmpty(token.get())){
             Mono.zip(request.bodyToMono(String.class),
                     Mono.just(request.remoteAddress()
                             .map(InetSocketAddress::getHostString)

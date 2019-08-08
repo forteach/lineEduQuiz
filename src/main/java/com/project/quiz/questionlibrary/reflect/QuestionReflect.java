@@ -1,6 +1,8 @@
 package com.project.quiz.questionlibrary.reflect;
 
 
+import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.StrUtil;
 import com.project.quiz.exceptions.CustomException;
 import com.project.quiz.questionlibrary.domain.question.ChoiceQst;
 import com.project.quiz.questionlibrary.domain.question.ChoiceQstOption;
@@ -12,9 +14,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static com.project.quiz.util.StringUtil.getRandomUUID;
-import static com.project.quiz.util.StringUtil.isEmpty;
 
 /**
  * @Description:
@@ -69,8 +68,8 @@ public class QuestionReflect {
         Method setId = setIdMethod(clazz);
         String id = (String) getId.invoke(object);
 
-        if (isEmpty(id)) {
-            setId.invoke(object, getRandomUUID());
+        if (StrUtil.isEmpty(id)) {
+            setId.invoke(object, IdUtil.fastSimpleUUID());
         }
     }
 
@@ -124,8 +123,8 @@ public class QuestionReflect {
 
         setOptChildren.invoke(object, id.stream()
                 .peek(choiceQstOption -> {
-                    if (isEmpty(choiceQstOption.getId())) {
-                        choiceQstOption.setId(getRandomUUID());
+                    if (StrUtil.isEmpty(choiceQstOption.getId())) {
+                        choiceQstOption.setId(IdUtil.fastSimpleUUID());
                     }
                 })
                 .collect(Collectors.toList()));

@@ -1,6 +1,8 @@
 package com.project.quiz.questionlibrary.service;
 
 
+import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.mongodb.BasicDBObject;
@@ -29,8 +31,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.project.quiz.common.Dic.*;
-import static com.project.quiz.util.StringUtil.getRandomUUID;
-import static com.project.quiz.util.StringUtil.isEmpty;
 
 /**
  * @Description:
@@ -59,6 +59,7 @@ public class BigQuestionService extends BaseQuestionServiceImpl<BigQuestion> {
 
     /**
      * 批量保存修改
+     *
      * @param questionList
      * @return
      */
@@ -68,6 +69,7 @@ public class BigQuestionService extends BaseQuestionServiceImpl<BigQuestion> {
 
     /**
      * 更改问题 (根据需要是否修改至练习册)
+     *
      * @param relate
      * @param questionList
      * @return
@@ -81,6 +83,7 @@ public class BigQuestionService extends BaseQuestionServiceImpl<BigQuestion> {
 
     /**
      * 设置大题的id及属性
+     *
      * @param bigQuestion
      * @return
      */
@@ -94,22 +97,22 @@ public class BigQuestionService extends BaseQuestionServiceImpl<BigQuestion> {
                         case QUESTION_CHOICE_OPTIONS_SINGLE:
                         case QUESTION_CHOICE_MULTIPLE_SINGLE:
                             ChoiceQst choiceQst = JSON.parseObject(jsonObject.toJSONString(), ChoiceQst.class);
-                            if (isEmpty(choiceQst.getId())) {
-                                choiceQst.setId(getRandomUUID());
+                            if (StrUtil.isEmpty(choiceQst.getId())) {
+                                choiceQst.setId(IdUtil.fastSimpleUUID());
                             }
                             choiceQst.setExamType("bigQuestion");
                             return choiceQst;
                         case BIG_QUESTION_EXAM_CHILDREN_TYPE_TRUEORFALSE:
                             TrueOrFalse trueOrFalse = JSON.parseObject(jsonObject.toJSONString(), TrueOrFalse.class);
-                            if (isEmpty(trueOrFalse.getId())) {
-                                trueOrFalse.setId(getRandomUUID());
+                            if (StrUtil.isEmpty(trueOrFalse.getId())) {
+                                trueOrFalse.setId(IdUtil.fastSimpleUUID());
                             }
                             trueOrFalse.setExamType("bigQuestion");
                             return trueOrFalse;
                         case BIG_QUESTION_EXAM_CHILDREN_TYPE_DESIGN:
                             Design design = JSON.parseObject(jsonObject.toJSONString(), Design.class);
-                            if (isEmpty(design.getId())) {
-                                design.setId(getRandomUUID());
+                            if (StrUtil.isEmpty(design.getId())) {
+                                design.setId(IdUtil.fastSimpleUUID());
                             }
                             design.setExamType("bigQuestion");
                             return design;

@@ -1,7 +1,7 @@
 package com.project.quiz.practiser.domain;
 
 
-import com.project.quiz.interaction.execute.web.vo.DataDatumVo;
+import com.project.quiz.interaction.web.vo.DataDatumVo;
 import com.project.quiz.practiser.domain.base.AbstractAnswer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

@@ -1,14 +1,13 @@
 package com.project.quiz.questionlibrary.domain;
 
 
-import com.project.quiz.common.DataUtil;
+import cn.hutool.core.date.DateUtil;
 import com.project.quiz.questionlibrary.domain.base.QuestionExamEntity;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -28,7 +27,7 @@ public class BigQuestion<T> extends QuestionExamEntity<T> {
 
     public BigQuestion(final String id, final List<T> examChildren) {
         this.id = id;
-        this.setUDate(DataUtil.format(new Date()));
+        this.setUDate(DateUtil.now());
         this.examChildren = examChildren;
     }
 

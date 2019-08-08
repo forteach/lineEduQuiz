@@ -1,6 +1,6 @@
 package com.project.quiz.web.vo;
 
-import com.project.quiz.interaction.execute.domain.Answ;
+import com.project.quiz.interaction.domain.Answ;
 import lombok.Data;
 
 import java.util.List;

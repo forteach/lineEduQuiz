@@ -28,7 +28,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.project.quiz.common.Dic.MONGDB_ID;
-import static com.project.quiz.util.StringUtil.isNotEmpty;
 
 /**
  * @Description:
@@ -61,7 +60,7 @@ public abstract class BaseExerciseBookServiceImpl<T extends ExerciseBook, R exte
 
         final Map<String, Integer> idexMap = problemSetVo.getQuestionIds().stream().collect(Collectors.toMap(QuestionIds::getBigQuestionId, QuestionIds::getIndex));
 
-        final Map<String, String> previewMap = problemSetVo.getQuestionIds().stream().filter(obj -> isNotEmpty(obj.getPreview())).collect(Collectors.toMap(QuestionIds::getBigQuestionId, QuestionIds::getPreview));
+        final Map<String, String> previewMap = problemSetVo.getQuestionIds().stream().filter(obj -> StrUtil.isNotEmpty(obj.getPreview())).collect(Collectors.toMap(QuestionIds::getBigQuestionId, QuestionIds::getPreview));
 
         return questionRepository
                 .findBigQuestionInId(

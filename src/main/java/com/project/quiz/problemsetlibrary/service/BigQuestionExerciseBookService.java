@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 
 import static com.project.quiz.common.Dic.EXE_BOOKTYPE_PREVIEW;
 import static com.project.quiz.common.Dic.MONGDB_ID;
-import static com.project.quiz.util.StringUtil.isNotEmpty;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
 /**
@@ -63,7 +62,7 @@ public class BigQuestionExerciseBookService extends BaseExerciseBookServiceImpl<
 
         final Map<String, Integer> idexMap = problemSetVo.getQuestionIds().stream().collect(Collectors.toMap(QuestionIds::getBigQuestionId, QuestionIds::getIndex));
 
-        final Map<String, String> previewMap = problemSetVo.getQuestionIds().stream().filter(obj -> isNotEmpty(obj.getPreview())).collect(Collectors.toMap(QuestionIds::getBigQuestionId, QuestionIds::getPreview));
+        final Map<String, String> previewMap = problemSetVo.getQuestionIds().stream().filter(obj -> StrUtil.isNotEmpty(obj.getPreview())).collect(Collectors.toMap(QuestionIds::getBigQuestionId, QuestionIds::getPreview));
 
         return questionRepository
                 .findBigQuestionInId(
@@ -77,7 +76,7 @@ public class BigQuestionExerciseBookService extends BaseExerciseBookServiceImpl<
                 .collectList()
                 .zipWhen(list -> findExerciseBook(String.valueOf(problemSetVo.getExeBookType()), problemSetVo.getChapterId(), problemSetVo.getCourseId()))
                 .flatMap(tuple2 -> {
-                    if (isNotEmpty(tuple2.getT2().getId())) {
+                    if (StrUtil.isNotEmpty(tuple2.getT2().getId())) {
                         tuple2.getT2().setQuestionChildren(tuple2.getT1());
                         return repository.save(tuple2.getT2());
                     } else {
@@ -167,13 +166,13 @@ public class BigQuestionExerciseBookService extends BaseExerciseBookServiceImpl<
 
         Criteria criteria = new Criteria();
 
-        if (isNotEmpty(exeBookType)) {
+        if (StrUtil.isNotEmpty(exeBookType)) {
             criteria.and("exeBookType").is(Integer.parseInt(exeBookType));
         }
-        if (isNotEmpty(chapterId)) {
+        if (StrUtil.isNotEmpty(chapterId)) {
             criteria.and("chapterId").is(chapterId);
         }
-        if (isNotEmpty(courseId)) {
+        if (StrUtil.isNotEmpty(courseId)) {
             criteria.and("courseId").is(courseId);
         }
 

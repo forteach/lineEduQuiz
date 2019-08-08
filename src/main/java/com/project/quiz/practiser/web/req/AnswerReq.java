@@ -1,6 +1,6 @@
 package com.project.quiz.practiser.web.req;
 
-import com.project.quiz.interaction.execute.web.vo.DataDatumVo;
+import com.project.quiz.interaction.web.vo.DataDatumVo;
 import com.project.quiz.practiser.web.req.base.AbstractReq;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

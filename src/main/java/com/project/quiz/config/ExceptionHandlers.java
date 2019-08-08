@@ -2,7 +2,6 @@ package com.project.quiz.config;
 
 import com.alibaba.fastjson.JSON;
 import com.project.quiz.common.WebResult;
-import com.project.quiz.exceptions.AskException;
 import com.project.quiz.exceptions.AssertErrorException;
 import com.project.quiz.exceptions.CustomException;
 import com.project.quiz.exceptions.ProblemSetException;
@@ -26,16 +25,16 @@ import reactor.core.publisher.Mono;
 @RestControllerAdvice
 public class ExceptionHandlers {
 
-    public static final String NULL_POINTEREXCEPTION_EMPTY_DATA = "The mapper returned a null value.";
+    static final String NULL_POINTEREXCEPTION_EMPTY_DATA = "The mapper returned a null value.";
 
     @ExceptionHandler(AssertErrorException.class)
     @ResponseBody
     public Mono<WebResult> serverExceptionHandler(AssertErrorException ex) {
-        WebResult wr= WebResult.failResult(ex.getErrorCode(), ex.getMessage());
-        if (log.isDebugEnabled()){
+        WebResult wr = WebResult.failResult(ex.getErrorCode(), ex.getMessage());
+        if (log.isDebugEnabled()) {
             log.debug("MyAssert : [{}]", JSON.toJSONString(wr));
         }
-        return  Mono.just(wr);
+        return Mono.just(wr);
     }
 
     @ExceptionHandler(Exception.class)
@@ -66,12 +65,6 @@ public class ExceptionHandlers {
     public Mono<WebResult> httpMessageNotReadableException(ServerWebExchange exchange, HttpMessageNotReadableException e) {
         log.error("全局异常拦截器 请求参数格式不正确  [{}] 请求地址 [{}]  /  异常信息  [{}]", e, exchange.getRequest().getPath(), e.getMessage());
         return WebResult.failResultMono(9100);
-    }
-
-    @ExceptionHandler(value = AskException.class)
-    public Mono<WebResult> httpMessageNotReadableException(ServerWebExchange exchange, AskException e) {
-        log.error("全局异常拦截器 课堂交互请求拦截  [{}] 请求地址 [{}]  /  异常信息  [{}]", e, exchange.getRequest().getPath(), e.getMessage());
-        return WebResult.okCustomResultMono(2000, e.getMessage());
     }
 
     @ExceptionHandler(value = CustomException.class)

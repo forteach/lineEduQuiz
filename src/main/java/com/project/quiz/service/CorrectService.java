@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSONPath;
 import com.project.quiz.common.DefineCode;
 import com.project.quiz.common.MyAssert;
 import com.project.quiz.exceptions.ExamQuestionsException;
-import com.project.quiz.interaction.execute.service.Key.SingleQueKey;
+import com.project.quiz.interaction.service.Key.SingleQueKey;
 import com.project.quiz.questionlibrary.domain.BigQuestion;
 import com.project.quiz.questionlibrary.domain.question.ChoiceQst;
 import com.project.quiz.questionlibrary.domain.question.TrueOrFalse;

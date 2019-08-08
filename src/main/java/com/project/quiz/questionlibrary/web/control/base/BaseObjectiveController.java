@@ -6,7 +6,6 @@ import com.project.quiz.questionlibrary.domain.base.QuestionExamEntity;
 import com.project.quiz.questionlibrary.domain.question.ChoiceQst;
 import com.project.quiz.questionlibrary.domain.question.ChoiceQstOption;
 import com.project.quiz.questionlibrary.domain.question.TrueOrFalse;
-import com.project.quiz.questionlibrary.service.KeywordService;
 import com.project.quiz.questionlibrary.service.base.BaseQuestionService;
 import com.project.quiz.service.TokenService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -26,8 +25,12 @@ import javax.validation.Valid;
  */
 public abstract class BaseObjectiveController <T extends QuestionExamEntity> extends BaseQuestionController<T>{
 
-    public BaseObjectiveController(BaseQuestionService<T> service, KeywordService<T> keywordService, TokenService tokenService) {
-        super(service, keywordService, tokenService);
+    public BaseObjectiveController(BaseQuestionService<T> service,
+//                                   KeywordService<T> keywordService,
+                                   TokenService tokenService) {
+        super(service,
+//                keywordService,
+                tokenService);
     }
 
     /**

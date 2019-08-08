@@ -1,7 +1,7 @@
 package com.project.quiz.domain;
 
 
-import com.project.quiz.interaction.execute.domain.Answ;
+import com.project.quiz.interaction.domain.Answ;
 import com.project.quiz.web.vo.ExerciseBookSheetVo;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

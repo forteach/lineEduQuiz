@@ -2,6 +2,7 @@ package com.project.quiz.problemsetlibrary.service.base;
 
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
 import com.project.quiz.domain.BaseEntity;
 import com.project.quiz.domain.QuestionIds;
 import com.project.quiz.exceptions.CustomException;
@@ -30,7 +31,6 @@ import java.util.stream.Collectors;
 
 import static com.project.quiz.common.Dic.PARAMETER_ALL;
 import static com.project.quiz.common.Dic.PARAMETER_PART;
-import static com.project.quiz.util.StringUtil.isNotEmpty;
 
 /**
  * @Description:
@@ -137,16 +137,16 @@ public abstract class BaseProblemSetServiceImpl<T extends ProblemSet, R extends 
 
         Query query = new Query(criteria);
 
-        if (isNotEmpty(sortVo.getExeBookType())) {
+        if (StrUtil.isNotEmpty(sortVo.getExeBookType())) {
             criteria.and("exeBookType").in(Integer.parseInt(sortVo.getExeBookType()));
         }
-        if (isNotEmpty(sortVo.getChapterId())) {
+        if (StrUtil.isNotEmpty(sortVo.getChapterId())) {
             criteria.and("chapterId").in(sortVo.getChapterId());
         }
-        if (isNotEmpty(sortVo.getLevelId())) {
+        if (StrUtil.isNotEmpty(sortVo.getLevelId())) {
             criteria.and("levelId").in(sortVo.getLevelId());
         }
-        if (isNotEmpty(sortVo.getCourseId())) {
+        if (StrUtil.isNotEmpty(sortVo.getCourseId())) {
             criteria.and("courseId").in(sortVo.getCourseId());
         }
 
