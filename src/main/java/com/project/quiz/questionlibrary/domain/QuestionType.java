@@ -6,32 +6,32 @@ package com.project.quiz.questionlibrary.domain;
  * @version: V1.0
  * @date: 2019/1/15  10:26
  */
-public enum QuestionType {
+//public enum QuestionType {
 
     /**
      * 提问
      */
     //BigQuestion,
-    TiWen,
+//    TiWen,
 
     /**uiDa
      * 头脑风暴题库
      */
     //BrainstormQuestion,
-    FengBao,
+//    FengBao,
     /**
      * 任务
      */
     //TaskQuestion,
-    RenWu,
+//    RenWu,
     /**
      * 问卷
      */
     //SurveyQuestion,
-    WenJuan,
+//    WenJuan,
     /**
      * 练习册
      */
     //ExerciseBook
-    LianXi
-}
+//    LianXi
+//}

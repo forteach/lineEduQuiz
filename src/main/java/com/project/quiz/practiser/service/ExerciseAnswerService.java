@@ -4,24 +4,15 @@ package com.project.quiz.practiser.service;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.JSONPath;
 import com.mongodb.client.result.UpdateResult;
 import com.project.quiz.common.DefineCode;
 import com.project.quiz.common.MyAssert;
-import com.project.quiz.domain.BaseEntity;
 import com.project.quiz.evaluate.domain.QuestionExerciseReward;
 import com.project.quiz.evaluate.service.RewardService;
 import com.project.quiz.evaluate.web.res.CumulativeRes;
 import com.project.quiz.practiser.domain.AnswerLists;
-import com.project.quiz.practiser.domain.ExerciseAnswerQuestionBook;
 import com.project.quiz.practiser.web.req.AddRewardReq;
 import com.project.quiz.practiser.web.req.AnswerReq;
-import com.project.quiz.problemsetlibrary.domain.BigQuestionExerciseBook;
-import com.project.quiz.problemsetlibrary.domain.base.ExerciseBook;
-import com.project.quiz.problemsetlibrary.service.BigQuestionExerciseBookService;
-import com.project.quiz.questionlibrary.repository.BigQuestionRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
@@ -29,15 +20,12 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import static com.project.quiz.common.Dic.BIG_QUESTION_EXAM_CHILDREN_TYPE_DESIGN;
-import static com.project.quiz.practiser.constant.Dic.IS_REWARD_N;
 import static com.project.quiz.practiser.constant.Dic.IS_REWARD_Y;
 
 /**
@@ -53,17 +41,19 @@ public class ExerciseAnswerService {
 
     private final ReactiveMongoTemplate reactiveMongoTemplate;
     private final RewardService rewardService;
-    private final BigQuestionRepository bigQuestionRepository;
-    private final BigQuestionExerciseBookService bigQuestionExerciseBookService;
+//    private final BigQuestionRepository bigQuestionRepository;
+//    private final BigQuestionExerciseBookService bigQuestionExerciseBookService;
 
     @Autowired
     public ExerciseAnswerService(ReactiveMongoTemplate reactiveMongoTemplate,
-                                 BigQuestionExerciseBookService bigQuestionExerciseBookService,
-                                 RewardService rewardService, BigQuestionRepository bigQuestionRepository) {
+//                                 BigQuestionExerciseBookService bigQuestionExerciseBookService,
+                                 RewardService rewardService
+//                                 BigQuestionRepository bigQuestionRepository
+    ) {
         this.reactiveMongoTemplate = reactiveMongoTemplate;
         this.rewardService = rewardService;
-        this.bigQuestionRepository = bigQuestionRepository;
-        this.bigQuestionExerciseBookService = bigQuestionExerciseBookService;
+//        this.bigQuestionRepository = bigQuestionRepository;
+//        this.bigQuestionExerciseBookService = bigQuestionExerciseBookService;
     }
 
     /**
@@ -121,9 +111,9 @@ public class ExerciseAnswerService {
         if (StrUtil.isNotBlank(courseId)) {
             update.set("courseId", courseId);
         }
-        if (StrUtil.isNotBlank(preview)) {
-            update.set("preview", preview);
-        }
+//        if (StrUtil.isNotBlank(preview)) {
+//            update.set("preview", preview);
+//        }
         if (StrUtil.isNotBlank(classId)) {
             update.set("classId", classId);
         }
@@ -156,55 +146,55 @@ public class ExerciseAnswerService {
      * @param answerReq
      * @return
      */
-    Mono<Boolean> updateAnswerLists(final AnswerReq answerReq) {
-        Criteria criteria = buildExerciseBook(answerReq.getExeBookType(), answerReq.getChapterId(), answerReq.getCourseId(), answerReq.getPreview(), answerReq.getClassId(), answerReq.getStudentId());
-
-        // 修改答题记录
-        Update update = updateQuery(answerReq.getExeBookType(), answerReq.getChapterId(), answerReq.getCourseId(),
-                answerReq.getPreview(), answerReq.getStudentId(), answerReq.getClassId(), answerReq.getChapterName());
-
-        //保存回答记录
-        if (StrUtil.isNotBlank(answerReq.getQuestionId())) {
-            update.addToSet("questions", answerReq.getQuestionId());
-        }
-        update.set("isReward", IS_REWARD_N);
-        return reactiveMongoTemplate
-                .upsert(Query.query(criteria), update, AnswerLists.class)
-                .map(UpdateResult::wasAcknowledged)
-                .filterWhen(b -> isAnswerCompleted(answerReq));
-    }
+//    Mono<Boolean> updateAnswerLists(final AnswerReq answerReq) {
+//        Criteria criteria = buildExerciseBook(answerReq.getExeBookType(), answerReq.getChapterId(), answerReq.getCourseId(), answerReq.getPreview(), answerReq.getClassId(), answerReq.getStudentId());
+//
+//        // 修改答题记录
+//        Update update = updateQuery(answerReq.getExeBookType(), answerReq.getChapterId(), answerReq.getCourseId(),
+//                answerReq.getPreview(), answerReq.getStudentId(), answerReq.getClassId(), answerReq.getChapterName());
+//
+//        //保存回答记录
+//        if (StrUtil.isNotBlank(answerReq.getQuestionId())) {
+//            update.addToSet("questions", answerReq.getQuestionId());
+//        }
+//        update.set("isReward", IS_REWARD_N);
+//        return reactiveMongoTemplate
+//                .upsert(Query.query(criteria), update, AnswerLists.class)
+//                .map(UpdateResult::wasAcknowledged)
+//                .filterWhen(b -> isAnswerCompleted(answerReq));
+//    }
 
     /**
      * 判断是否进行完毕　答题、批改
      * @param answerReq
      * @return
      */
-    private Mono<Boolean> isAnswerCompleted(final AnswerReq answerReq) {
-
-        Criteria criteria = buildExerciseBook(answerReq.getExeBookType(), answerReq.getChapterId(), answerReq.getCourseId(), answerReq.getPreview(), answerReq.getClassId(), answerReq.getStudentId());
-
-        Query query = Query.query(criteria);
-        Mono<List<String>> answerQuestionIds = reactiveMongoTemplate.findOne(query, AnswerLists.class)
-                .filter(Objects::nonNull).map(AnswerLists::getQuestions);
-        //查询全部题目信息
-        Mono<List<String>> allQuestionIds = findAllQuestionIds(answerReq.getExeBookType(), answerReq.getCourseId(), answerReq.getChapterId());
-        return Mono.zip(answerQuestionIds, allQuestionIds)
-                .flatMap(tuple2 -> {
-                    return isCompletedSuccess(tuple2.getT1(), tuple2.getT2())
-                            .flatMap(s -> {
-                                return reactiveMongoTemplate.upsert(query, Update.update("isAnswerCompleted", s), AnswerLists.class)
-                                        .map(UpdateResult::wasAcknowledged)
-                                        .filterWhen(b -> {
-                                            if (b) {
-                                                return setIsCorrectCompleted(answerReq.getExeBookType(), answerReq.getChapterId(), answerReq.getCourseId(),
-                                                        answerReq.getPreview(), answerReq.getClassId(), answerReq.getStudentId(), answerReq.getQuestionId());
-                                            } else {
-                                                return Mono.just(false);
-                                            }
-                                        });
-                            });
-                });
-    }
+//    private Mono<Boolean> isAnswerCompleted(final AnswerReq answerReq) {
+//
+//        Criteria criteria = buildExerciseBook(answerReq.getExeBookType(), answerReq.getChapterId(), answerReq.getCourseId(), answerReq.getPreview(), answerReq.getClassId(), answerReq.getStudentId());
+//
+//        Query query = Query.query(criteria);
+//        Mono<List<String>> answerQuestionIds = reactiveMongoTemplate.findOne(query, AnswerLists.class)
+//                .filter(Objects::nonNull).map(AnswerLists::getQuestions);
+//        //查询全部题目信息
+//        Mono<List<String>> allQuestionIds = findAllQuestionIds(answerReq.getExeBookType(), answerReq.getCourseId(), answerReq.getChapterId());
+//        return Mono.zip(answerQuestionIds, allQuestionIds)
+//                .flatMap(tuple2 -> {
+//                    return isCompletedSuccess(tuple2.getT1(), tuple2.getT2())
+//                            .flatMap(s -> {
+//                                return reactiveMongoTemplate.upsert(query, Update.update("isAnswerCompleted", s), AnswerLists.class)
+//                                        .map(UpdateResult::wasAcknowledged)
+//                                        .filterWhen(b -> {
+//                                            if (b) {
+//                                                return setIsCorrectCompleted(answerReq.getExeBookType(), answerReq.getChapterId(), answerReq.getCourseId(),
+//                                                        answerReq.getPreview(), answerReq.getClassId(), answerReq.getStudentId(), answerReq.getQuestionId());
+//                                            } else {
+//                                                return Mono.just(false);
+//                                            }
+//                                        });
+//                            });
+//                });
+//    }
 
     /**
      * 判断是否需要批改　主观题不批改，客观题调用批改方法并返回结果
@@ -218,15 +208,15 @@ public class ExerciseAnswerService {
      * @param questionId
      * @return
      */
-    Mono<Boolean> setIsCorrectCompleted(final String exeBookType, final String chapterId, final String courseId, final String preview, final String classId, final String studentId, final String questionId) {
-        return findExamType(questionId).flatMap(type -> {
-            if (BIG_QUESTION_EXAM_CHILDREN_TYPE_DESIGN.equals(type)) {
-                return Mono.just(true);
-            } else {
-                return addCorrect(exeBookType, chapterId, courseId, preview, classId, studentId, questionId);
-            }
-        });
-    }
+//    Mono<Boolean> setIsCorrectCompleted(final String exeBookType, final String chapterId, final String courseId, final String preview, final String classId, final String studentId, final String questionId) {
+//        return findExamType(questionId).flatMap(type -> {
+//            if (BIG_QUESTION_EXAM_CHILDREN_TYPE_DESIGN.equals(type)) {
+//                return Mono.just(true);
+//            } else {
+//                return addCorrect(exeBookType, chapterId, courseId, preview, classId, studentId, questionId);
+//            }
+//        });
+//    }
 
     /**
      * 查找习题类型
@@ -234,34 +224,34 @@ public class ExerciseAnswerService {
      * @param questionId
      * @return
      */
-    private Mono<String> findExamType(final String questionId) {
-        return bigQuestionRepository.findById(questionId)
-                .flatMap(bigQuestion -> {
-                    final JSONObject json = JSON.parseObject(JSON.toJSONString(bigQuestion));
-                    log.debug("查找题类型 : questionId : [], bigQuestion : []", questionId, bigQuestion);
-                    return Mono.just(String.valueOf(JSONPath.eval(json, "$.examChildren[0].examType")));
-                });
-    }
+//    private Mono<String> findExamType(final String questionId) {
+//        return bigQuestionRepository.findById(questionId)
+//                .flatMap(bigQuestion -> {
+//                    final JSONObject json = JSON.parseObject(JSON.toJSONString(bigQuestion));
+//                    log.debug("查找题类型 : questionId : [], bigQuestion : []", questionId, bigQuestion);
+//                    return Mono.just(String.valueOf(JSONPath.eval(json, "$.examChildren[0].examType")));
+//                });
+//    }
 
-    private Mono<Boolean> isCorrectCompleted(final String exeBookType, final String chapterId, final String courseId, final String preview, final String classId, final String studentId) {
-
-        Criteria criteria = buildExerciseBook(exeBookType, chapterId, courseId, preview, classId, studentId);
-
-        Query query = Query.query(criteria);
-
-        Mono<List<String>> answerQuestionIds = reactiveMongoTemplate.findOne(query, AnswerLists.class)
-                .map(AnswerLists::getCorrectQuestionIds);
-        //查询全部题目信息
-        Mono<List<String>> allQuestionIds = findAllQuestionIds(exeBookType, courseId, chapterId);
-        return Mono.zip(answerQuestionIds, allQuestionIds)
-                .flatMap(tuple2 -> {
-                    return isCompletedSuccess(tuple2.getT1(), tuple2.getT2())
-                            .flatMap(s -> {
-                                return reactiveMongoTemplate.upsert(query, Update.update("isCorrectCompleted", s), AnswerLists.class)
-                                        .map(UpdateResult::wasAcknowledged);
-                            });
-                });
-    }
+//    private Mono<Boolean> isCorrectCompleted(final String exeBookType, final String chapterId, final String courseId, final String preview, final String classId, final String studentId) {
+//
+//        Criteria criteria = buildExerciseBook(exeBookType, chapterId, courseId, preview, classId, studentId);
+//
+//        Query query = Query.query(criteria);
+//
+//        Mono<List<String>> answerQuestionIds = reactiveMongoTemplate.findOne(query, AnswerLists.class)
+//                .map(AnswerLists::getCorrectQuestionIds);
+//        //查询全部题目信息
+//        Mono<List<String>> allQuestionIds = findAllQuestionIds(exeBookType, courseId, chapterId);
+//        return Mono.zip(answerQuestionIds, allQuestionIds)
+//                .flatMap(tuple2 -> {
+//                    return isCompletedSuccess(tuple2.getT1(), tuple2.getT2())
+//                            .flatMap(s -> {
+//                                return reactiveMongoTemplate.upsert(query, Update.update("isCorrectCompleted", s), AnswerLists.class)
+//                                        .map(UpdateResult::wasAcknowledged);
+//                            });
+//                });
+//    }
 
     /**
      * 添加已经批改
@@ -287,8 +277,8 @@ public class ExerciseAnswerService {
         }
         return reactiveMongoTemplate
                 .upsert(Query.query(criteria), update, AnswerLists.class)
-                .map(UpdateResult::wasAcknowledged)
-                .filterWhen(b -> isCorrectCompleted(exeBookType, chapterId, courseId, preview, classId, studentId));
+                .map(UpdateResult::wasAcknowledged);
+//                .filterWhen(b -> isCorrectCompleted(exeBookType, chapterId, courseId, preview, classId, studentId));
     }
 
 
@@ -373,48 +363,48 @@ public class ExerciseAnswerService {
      * @param chapterId
      * @return
      */
-    private Mono<List<String>> findAllQuestionIds(final String exeBookType, final String courseId, final String chapterId) {
+//    private Mono<List<String>> findAllQuestionIds(final String exeBookType, final String courseId, final String chapterId) {
+//
+//        Criteria criteria = new Criteria();
+//
+//        if (StrUtil.isNotBlank(exeBookType)) {
+//            criteria.and("exeBookType").in(Integer.parseInt(exeBookType));
+//        }
+//        if (StrUtil.isNotBlank(chapterId)) {
+//            criteria.and("chapterId").in(chapterId);
+//        }
+//        if (StrUtil.isNotBlank(courseId)) {
+//            criteria.and("courseId").in(courseId);
+//        }
+//
+//        Mono<List<BaseEntity>> questionExamEntitylist = reactiveMongoTemplate
+//                .findOne(Query.query(criteria), BigQuestionExerciseBook.class)
+//                .defaultIfEmpty(new BigQuestionExerciseBook())
+//                .map(ExerciseBook::getQuestionChildren);
+//
+//        return questionExamEntitylist
+//                .flatMapMany(Flux::fromIterable)
+//                .map(BaseEntity::getId)
+//                .collectList();
+//    }
 
-        Criteria criteria = new Criteria();
-
-        if (StrUtil.isNotBlank(exeBookType)) {
-            criteria.and("exeBookType").in(Integer.parseInt(exeBookType));
-        }
-        if (StrUtil.isNotBlank(chapterId)) {
-            criteria.and("chapterId").in(chapterId);
-        }
-        if (StrUtil.isNotBlank(courseId)) {
-            criteria.and("courseId").in(courseId);
-        }
-
-        Mono<List<BaseEntity>> questionExamEntitylist = reactiveMongoTemplate
-                .findOne(Query.query(criteria), BigQuestionExerciseBook.class)
-                .defaultIfEmpty(new BigQuestionExerciseBook())
-                .map(ExerciseBook::getQuestionChildren);
-
-        return questionExamEntitylist
-                .flatMapMany(Flux::fromIterable)
-                .map(BaseEntity::getId)
-                .collectList();
-    }
-
-    public Mono<BigQuestionExerciseBook> findAnswerStudent(final AnswerReq answerReq) {
-        Criteria criteria = buildExerciseBook(answerReq.getExeBookType(), answerReq.getChapterId(), answerReq.getCourseId(),
-                answerReq.getPreview(), answerReq.getClassId(), answerReq.getStudentId());
-
-
-        Query query = Query.query(criteria);
-        query.fields().include("bigQuestionExerciseBook");
-
-        return reactiveMongoTemplate.findOne(query, ExerciseAnswerQuestionBook.class)
-                .switchIfEmpty(Mono.just(new ExerciseAnswerQuestionBook()))
-                .flatMap(exerciseAnswerQuestionBook -> {
-                    if (exerciseAnswerQuestionBook.getBigQuestionExerciseBook() == null){
-                        return bigQuestionExerciseBookService.findExerciseBook(answerReq.getChapterId(), answerReq.getCourseId());
-                    }else {
-                        return Mono.just(exerciseAnswerQuestionBook.getBigQuestionExerciseBook());
-                    }
-                });
-
-    }
+//    public Mono<BigQuestionExerciseBook> findAnswerStudent(final AnswerReq answerReq) {
+//        Criteria criteria = buildExerciseBook(answerReq.getExeBookType(), answerReq.getChapterId(), answerReq.getCourseId(),
+//                answerReq.getPreview(), answerReq.getClassId(), answerReq.getStudentId());
+//
+//
+//        Query query = Query.query(criteria);
+//        query.fields().include("bigQuestionExerciseBook");
+//
+//        return reactiveMongoTemplate.findOne(query, ExerciseAnswerQuestionBook.class)
+//                .switchIfEmpty(Mono.just(new ExerciseAnswerQuestionBook()))
+//                .flatMap(exerciseAnswerQuestionBook -> {
+//                    if (exerciseAnswerQuestionBook.getBigQuestionExerciseBook() == null){
+//                        return bigQuestionExerciseBookService.findExerciseBook(answerReq.getChapterId(), answerReq.getCourseId());
+//                    }else {
+//                        return Mono.just(exerciseAnswerQuestionBook.getBigQuestionExerciseBook());
+//                    }
+//                });
+//
+//    }
 }

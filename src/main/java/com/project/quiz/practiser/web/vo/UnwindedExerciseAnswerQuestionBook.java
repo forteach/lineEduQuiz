@@ -1,7 +1,7 @@
 package com.project.quiz.practiser.web.vo;
 
 import com.project.quiz.domain.BaseEntity;
-import com.project.quiz.problemsetlibrary.web.vo.UnwindedBigQuestionexerciseBook;
+//import com.project.quiz.problemsetlibrary.web.vo.UnwindedBigQuestionexerciseBook;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -15,5 +15,5 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class UnwindedExerciseAnswerQuestionBook extends BaseEntity {
-    private UnwindedBigQuestionexerciseBook bigQuestionExerciseBook;
+//    private UnwindedBigQuestionexerciseBook bigQuestionExerciseBook;
 }

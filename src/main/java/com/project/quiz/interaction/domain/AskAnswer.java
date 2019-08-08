@@ -36,8 +36,8 @@ public class AskAnswer extends BaseEntity {
     /**
      * 回答参与方式
      */
-    @ApiModelProperty(value = "参与方式 race   : 抢答/raise  : 举手/select : 选择/vote  没有参与方式：no  : 投票", name = "interactive")
-    private String interactive;
+//    @ApiModelProperty(value = "参与方式 race   : 抢答/raise  : 举手/select : 选择/vote  没有参与方式：no  : 投票", name = "interactive")
+//    private String interactive;
 
     /**
      * 答案
@@ -66,8 +66,9 @@ public class AskAnswer extends BaseEntity {
      //     * 问题库类别
      //
      */
-    @ApiModelProperty(value = "提问：TiWen  任务：RenWu", name ="questionType")
-    private String questionType;
+//    @ApiModelProperty(value = "提问：TiWen  任务：RenWu", name ="questionType")
+//    private String questionType;
+
     /**
      * 答案对错
      */
@@ -83,14 +84,14 @@ public class AskAnswer extends BaseEntity {
     /**
      * 答案评价
      */
-    @ApiModelProperty(value = "主观题 教师给出的答案评价", name = "evaluate")
-    private String evaluate;
+//    @ApiModelProperty(value = "主观题 教师给出的答案评价", name = "evaluate")
+//    private String evaluate;
 
     /**
      * 课堂id
      */
-    @ApiModelProperty(value = "课堂id", name = "circleId")
-    private String circleId;
+//    @ApiModelProperty(value = "课堂id", name = "circleId")
+//    private String circleId;
 
 
     public AskAnswer() {
@@ -98,12 +99,12 @@ public class AskAnswer extends BaseEntity {
 
     public AskAnswer(String examineeId, String questionType, String answer, String questionId, String uDate, String right, String circleId) {
         this.examineeId = examineeId;
-        this.questionType = questionType;
+//        this.questionType = questionType;
         this.answer = answer;
         this.questionId = questionId;
         this.uDate = uDate;
         this.right = right;
-        this.circleId = circleId;
+//        this.circleId = circleId;
     }
 
 }

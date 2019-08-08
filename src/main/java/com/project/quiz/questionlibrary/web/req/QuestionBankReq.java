@@ -33,8 +33,8 @@ public class QuestionBankReq extends SortVo {
     /**
      * 知识点id
      */
-    @ApiModelProperty(value = "知识点id", name = "knowledgeId", example = "0")
-    private String knowledgeId;
+//    @ApiModelProperty(value = "知识点id", name = "knowledgeId", example = "0")
+//    private String knowledgeId;
 
 
     /**
@@ -52,7 +52,7 @@ public class QuestionBankReq extends SortVo {
     /**
      * 关键字
      */
-    @ApiModelProperty(value = "关键字", name = "keyword", example = "")
-    private String[] keyword;
+//    @ApiModelProperty(value = "关键字", name = "keyword", example = "")
+//    private String[] keyword;
 
 }

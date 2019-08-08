@@ -8,9 +8,6 @@ import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import com.project.quiz.exceptions.CustomException;
 import com.project.quiz.exceptions.ExamQuestionsException;
-import com.project.quiz.exceptions.ProblemSetException;
-import com.project.quiz.problemsetlibrary.domain.base.ExerciseBook;
-import com.project.quiz.questionlibrary.domain.QuestionBank;
 import com.project.quiz.questionlibrary.domain.base.QuestionExamEntity;
 import com.project.quiz.questionlibrary.reflect.QuestionReflect;
 import com.project.quiz.questionlibrary.repository.base.QuestionMongoRepository;
@@ -18,7 +15,6 @@ import com.project.quiz.questionlibrary.web.req.QuestionBankReq;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -79,9 +75,9 @@ public abstract class BaseQuestionServiceImpl<T extends QuestionExamEntity> impl
     @Override
     public Mono<T> editQuestions(final T bigQuestion) {
         bigQuestion.setUDate(DateUtil.now());
-        if (bigQuestion.getRelate() == COVER_QUESTION_BANK) {
-            return editQuestionsCover(bigQuestion);
-        }
+//        if (bigQuestion.getRelate() == COVER_QUESTION_BANK) {
+//            return editQuestionsCover(bigQuestion);
+//        }
         return repository.save(bigQuestion);
     }
 
@@ -107,23 +103,23 @@ public abstract class BaseQuestionServiceImpl<T extends QuestionExamEntity> impl
      * @param bigQuestion
      * @return
      */
-    private Mono<T> editQuestionsCover(final T bigQuestion) {
-
-        Query query = Query.query(Criteria.where(QUESTION_CHILDREN + "." + MONGDB_ID).is(bigQuestion.getId()));
-        Update update = new Update();
-        update.set("questionChildren.$.paperInfo", bigQuestion.getPaperInfo());
-        update.set("questionChildren.$.examChildren", bigQuestion.getExamChildren());
-        update.set("questionChildren.$.type", bigQuestion.getType());
-        update.set("questionChildren.$.score", bigQuestion.getScore());
-        return reactiveMongoTemplate.updateMulti(query, update, ExerciseBook.class).map(UpdateResult::getMatchedCount).flatMap(obj -> {
-            if (obj != -1) {
-                return repository.save(bigQuestion);
-            } else {
-                return Mono.error(new ProblemSetException("更新失败"));
-            }
-        });
-
-    }
+//    private Mono<T> editQuestionsCover(final T bigQuestion) {
+//
+//        Query query = Query.query(Criteria.where(QUESTION_CHILDREN + "." + MONGDB_ID).is(bigQuestion.getId()));
+//        Update update = new Update();
+//        update.set("questionChildren.$.paperInfo", bigQuestion.getPaperInfo());
+//        update.set("questionChildren.$.examChildren", bigQuestion.getExamChildren());
+////        update.set("questionChildren.$.type", bigQuestion.getType());
+//        update.set("questionChildren.$.score", bigQuestion.getScore());
+//        return reactiveMongoTemplate.updateMulti(query, update, ExerciseBook.class).map(UpdateResult::getMatchedCount).flatMap(obj -> {
+//            if (obj != -1) {
+//                return repository.save(bigQuestion);
+//            } else {
+//                return Mono.error(new ProblemSetException("更新失败"));
+//            }
+//        });
+//
+//    }
 
     /**
      * 更新题目与教师关系信息
@@ -132,10 +128,13 @@ public abstract class BaseQuestionServiceImpl<T extends QuestionExamEntity> impl
      * @param teacherId
      * @return
      */
-    @Override
-    public Mono<UpdateResult> questionBankAssociation(final String questionBankId, final String teacherId) {
-        return reactiveMongoTemplate.upsert(Query.query(Criteria.where(MONGDB_ID).is(questionBankId)), new Update().addToSet(MONGDB_COLUMN_QUESTION_BANK_TEACHER, teacherId), QuestionBank.class);
-    }
+//    @Override
+//    public Mono<UpdateResult> questionBankAssociation(final String questionBankId, final String teacherId) {
+//        return reactiveMongoTemplate
+//                .upsert(Query.query(Criteria.where(MONGDB_ID)
+//                        .is(questionBankId)), new Update()
+//                        .addToSet(MONGDB_COLUMN_QUESTION_BANK_TEACHER, teacherId), QuestionBank.class);
+//    }
 
     /**
      * 题目分享
@@ -144,10 +143,10 @@ public abstract class BaseQuestionServiceImpl<T extends QuestionExamEntity> impl
      * @param teacherId
      * @return
      */
-    @Override
-    public Mono<Boolean> questionBankAssociationAdd(final String questionBankId, final String teacherId) {
-        return questionBankAssociation(questionBankId, teacherId).map(UpdateResult::isModifiedCountAvailable);
-    }
+//    @Override
+//    public Mono<Boolean> questionBankAssociationAdd(final String questionBankId, final String teacherId) {
+//        return questionBankAssociation(questionBankId, teacherId).map(UpdateResult::isModifiedCountAvailable);
+//    }
 
     /**
      * 获取泛型的class
@@ -211,7 +210,7 @@ public abstract class BaseQuestionServiceImpl<T extends QuestionExamEntity> impl
                 .include(MONGDB_ID)
                 .include("chapterId")
                 .include("levelId")
-                .include("knowledgeId")
+//                .include("knowledgeId")
                 .include("examType")
                 .include("teacherId")
                 .include("uDate");
@@ -253,15 +252,15 @@ public abstract class BaseQuestionServiceImpl<T extends QuestionExamEntity> impl
         if (StrUtil.isNotEmpty(sortVo.getChapterId())) {
             criteria.and("chapterId").is(sortVo.getChapterId());
         }
-        if (StrUtil.isNotEmpty(sortVo.getKnowledgeId())) {
-            criteria.and("knowledgeId").is(sortVo.getKnowledgeId());
-        }
+//        if (StrUtil.isNotEmpty(sortVo.getKnowledgeId())) {
+//            criteria.and("knowledgeId").is(sortVo.getKnowledgeId());
+//        }
         if (StrUtil.isNotEmpty(sortVo.getQuestionType())) {
             criteria.and("examChildren.examType").is(sortVo.getQuestionType());
         }
-        if (sortVo.getKeyword() != null && sortVo.getKeyword().length > 0) {
-            criteria.and("keyword").all(sortVo.getKeyword());
-        }
+//        if (sortVo.getKeyword() != null && sortVo.getKeyword().length > 0) {
+//            criteria.and("keyword").all(sortVo.getKeyword());
+//        }
 
         return new Query(criteria);
     }

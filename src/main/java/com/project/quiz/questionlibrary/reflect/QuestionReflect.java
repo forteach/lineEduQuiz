@@ -6,7 +6,6 @@ import cn.hutool.core.util.StrUtil;
 import com.project.quiz.exceptions.CustomException;
 import com.project.quiz.questionlibrary.domain.question.ChoiceQst;
 import com.project.quiz.questionlibrary.domain.question.ChoiceQstOption;
-import com.project.quiz.questionlibrary.domain.question.Design;
 import com.project.quiz.questionlibrary.domain.question.TrueOrFalse;
 import org.springframework.stereotype.Component;
 
@@ -97,10 +96,12 @@ public class QuestionReflect {
             setExamType.invoke(object, choiceType);
             setupOptChildrenId(object, clazz);
 
-        } else if (Design.class.isAssignableFrom(clazz)) {
+        }
+//        else if (Design.class.isAssignableFrom(clazz)) {
             //设置主观题参数
-            setExamType.invoke(object, "design");
-        } else {
+//            setExamType.invoke(object, "design");
+//        }
+        else {
             throw new CustomException("获取题目type 出错");
         }
     }

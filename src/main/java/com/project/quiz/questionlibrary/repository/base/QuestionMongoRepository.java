@@ -24,8 +24,8 @@ public interface QuestionMongoRepository<T extends QuestionExamEntity> extends R
      * @param page
      * @return
      */
-    @Query("{ 'teacherId':?0}")
-    Flux<T> findAllDetailedPage(final String teacherId, final Pageable page);
+//    @Query("{ 'teacherId':?0}")
+//    Flux<T> findAllDetailedPage(final String teacherId, final Pageable page);
 
 
 }

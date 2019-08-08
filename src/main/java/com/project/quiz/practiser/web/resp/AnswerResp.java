@@ -25,8 +25,8 @@ public class AnswerResp implements Serializable {
     @ApiModelProperty(value = "学生头像", name = "portrait", dataType = "string")
     private String portrait;
 
-    @ApiModelProperty(name = "bigQuestionExerciseBooks", value = "习题快照和答题内容")
-    private List<BigQuestionExerciseBookResp> bigQuestionExerciseBooks;
+//    @ApiModelProperty(name = "bigQuestionExerciseBooks", value = "习题快照和答题内容")
+//    private List<BigQuestionExerciseBookResp> bigQuestionExerciseBooks;
 
     public AnswerResp() {
     }

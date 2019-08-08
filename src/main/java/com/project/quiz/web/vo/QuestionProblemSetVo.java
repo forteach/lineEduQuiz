@@ -1,6 +1,6 @@
 package com.project.quiz.web.vo;
 
-import com.project.quiz.problemsetlibrary.domain.base.ProblemSet;
+//import com.project.quiz.problemsetlibrary.domain.base.ProblemSet;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -32,8 +32,8 @@ public class QuestionProblemSetVo {
     /**
      * 题集
      */
-    @ApiModelProperty(value = "题集", name = "problemSet")
-    private ProblemSet problemSet;
+//    @ApiModelProperty(value = "题集", name = "problemSet")
+//    private ProblemSet problemSet;
 
     /**
      * 交集 (题集中包含的id)

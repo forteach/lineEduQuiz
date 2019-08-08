@@ -2,9 +2,7 @@ package com.project.quiz.interaction.service;
 
 
 import cn.hutool.core.util.StrUtil;
-import com.project.quiz.interaction.domain.ActivityAskAnswer;
 import com.project.quiz.interaction.domain.AskAnswer;
-import com.project.quiz.interaction.web.resp.ActivityAskAnswerResp;
 import com.project.quiz.interaction.web.resp.InteractAnswerRecordResp;
 import com.project.quiz.interaction.web.resp.InteractRecordResp;
 import com.project.quiz.service.StudentsService;
@@ -15,10 +13,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
 import java.util.Objects;
-
-import static com.project.quiz.common.Dic.MONGDB_ID;
 
 /**
  * @Auther: zhangyy
@@ -55,9 +50,9 @@ public class RecordService {
         if (StrUtil.isNotBlank(questionType)){
             criteria.and("questionType").is(questionType);
         }
-        if (StrUtil.isNotBlank(interactive)){
-            criteria.and("interactive").is(interactive);
-        }
+//        if (StrUtil.isNotBlank(interactive)){
+//            criteria.and("interactive").is(interactive);
+//        }
 
         Query query = Query.query(criteria);
 
@@ -87,45 +82,45 @@ public class RecordService {
      * @param questionId
      * @return
      */
-    public Mono<List<ActivityAskAnswerResp>> findAskRecord(final String circleId, final String questionId, final String examineeId, final String questionType) {
-        Criteria criteria = Criteria.where("circleId").is(circleId);
-        if (StrUtil.isNotBlank(examineeId)){
-            criteria.and("examineeId").is(examineeId);
-        }
-        if (StrUtil.isNotBlank(questionType)){
-            criteria.and("questionType").is(questionType);
-        }
-        if (StrUtil.isNotBlank(questionId)){
-            criteria.and("answList.questionId").is(questionId);
-        }
-        Query query = Query.query(criteria);
-
-        query.fields().exclude(MONGDB_ID).exclude("udate");
-
-        return reactiveMongoTemplate.find(query, ActivityAskAnswer.class)
-                .collectList()
-                .flatMapMany(Flux::fromIterable)
-                .filter(Objects::nonNull)
-                .flatMap(this::recordResp)
-                .collectList();
-    }
+//    public Mono<List<ActivityAskAnswerResp>> findAskRecord(final String circleId, final String questionId, final String examineeId, final String questionType) {
+//        Criteria criteria = Criteria.where("circleId").is(circleId);
+//        if (StrUtil.isNotBlank(examineeId)){
+//            criteria.and("examineeId").is(examineeId);
+//        }
+//        if (StrUtil.isNotBlank(questionType)){
+//            criteria.and("questionType").is(questionType);
+//        }
+//        if (StrUtil.isNotBlank(questionId)){
+//            criteria.and("answList.questionId").is(questionId);
+//        }
+//        Query query = Query.query(criteria);
+//
+//        query.fields().exclude(MONGDB_ID).exclude("udate");
+//
+//        return reactiveMongoTemplate.find(query, ActivityAskAnswer.class)
+//                .collectList()
+//                .flatMapMany(Flux::fromIterable)
+//                .filter(Objects::nonNull)
+//                .flatMap(this::recordResp)
+//                .collectList();
+//    }
 
     /**
      * 数据对象进行转换
      * @param activityAskAnswer
      * @return
      */
-    private Mono<ActivityAskAnswerResp> recordResp(final ActivityAskAnswer activityAskAnswer) {
-        Mono<String> name = studentsService.findStudentsName(activityAskAnswer.getExamineeId());
-        Mono<String> portrait = studentsService.findStudentsPortrait(activityAskAnswer.getExamineeId());
-        return name.zipWith(portrait)
-                .flatMap(t -> {
-                    return Mono.just(new ActivityAskAnswerResp(t.getT1(), t.getT2(),
-                            activityAskAnswer.getExamineeId(),
-                            activityAskAnswer.getQuestionType(),
-                            activityAskAnswer.getEvaluate(),
-                            activityAskAnswer.getCircleId(),
-                            activityAskAnswer.getAnswList()));
-                });
-    }
+//    private Mono<ActivityAskAnswerResp> recordResp(final ActivityAskAnswer activityAskAnswer) {
+//        Mono<String> name = studentsService.findStudentsName(activityAskAnswer.getExamineeId());
+//        Mono<String> portrait = studentsService.findStudentsPortrait(activityAskAnswer.getExamineeId());
+//        return name.zipWith(portrait)
+//                .flatMap(t -> {
+//                    return Mono.just(new ActivityAskAnswerResp(t.getT1(), t.getT2(),
+//                            activityAskAnswer.getExamineeId(),
+//                            activityAskAnswer.getQuestionType(),
+//                            activityAskAnswer.getEvaluate(),
+//                            activityAskAnswer.getCircleId(),
+//                            activityAskAnswer.getAnswList()));
+//                });
+//    }
 }

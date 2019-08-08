@@ -44,7 +44,7 @@ public abstract class AbstractExam {
      * 是否修改应用到所有的练习册
      * 1 : 应用到所有练习册    0  :  只修改本题
      */
-    @ApiModelProperty(value = "题目id", name = "id", example = "0")
-    private int relate;
+//    @ApiModelProperty(value = "题目id", name = "id", example = "0")
+//    private int relate;
 
 }

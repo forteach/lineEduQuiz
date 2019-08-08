@@ -174,4 +174,9 @@ public class Dic {
      * 登录认证的教师类型
      */
     public final static String TOKEN_TEACHER ="teacher";
+
+    /**
+     * 学生信息从redis 取出通过从[oracle 数据库取出保存进入(redis) hash]
+     */
+    public static final String STUDENT_ADO = "studentsData$";
 }

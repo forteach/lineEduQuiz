@@ -51,9 +51,9 @@ public class QuestionExamEntity<T> extends BaseEntity {
     /**
      * 大题用题目类型 分为主管或客观 director  objective
      */
-    @ApiModelProperty(value = "大题用题目类型 分为主管或客观 director  objective", name = "type", example = "director")
-    @JsonView(BigQuestionView.Summary.class)
-    protected String type;
+//    @ApiModelProperty(value = "大题用题目类型 分为主管或客观 director  objective", name = "type", example = "director")
+//    @JsonView(BigQuestionView.Summary.class)
+//    protected String type;
 
     /**
      * 章节id
@@ -66,9 +66,9 @@ public class QuestionExamEntity<T> extends BaseEntity {
      * 是否修改应用到所有的练习册
      * 1 : 应用到所有练习册    0  :  只修改本题
      */
-    @Transient
-    @ApiModelProperty(value = "是否修改应用到所有的练习册", name = "relate", example = "0")
-    private int relate;
+//    @Transient
+//    @ApiModelProperty(value = "是否修改应用到所有的练习册", name = "relate", example = "0")
+//    private int relate;
 
     /**
      * 难易度id
@@ -79,15 +79,15 @@ public class QuestionExamEntity<T> extends BaseEntity {
     /**
      * 知识点id
      */
-    @ApiModelProperty(value = "知识点id", name = "knowledgeId", example = "0")
-    private String knowledgeId;
+//    @ApiModelProperty(value = "知识点id", name = "knowledgeId", example = "0")
+//    private String knowledgeId;
 
     /**
      * 关键词
      */
-    @ApiModelProperty(value = "关键词", name = "keyword", example = "")
-    @Indexed
-    private List<String> keyword;
+//    @ApiModelProperty(value = "关键词", name = "keyword", example = "")
+//    @Indexed
+//    private List<String> keyword;
 
     /**
      * 下标
@@ -101,6 +101,6 @@ public class QuestionExamEntity<T> extends BaseEntity {
     /**
      * 课堂练习  before/预习 now/课堂 before,now/全部
      */
-    @ApiModelProperty(value = "课堂练习  before/预习 now/课堂 before,now/全部", name = "preview", example = "1")
-    private String preview;
+//    @ApiModelProperty(value = "课堂练习  before/预习 now/课堂 before,now/全部", name = "preview", example = "1")
+//    private String preview;
 }

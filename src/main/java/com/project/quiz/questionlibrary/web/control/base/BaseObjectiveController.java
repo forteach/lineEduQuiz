@@ -66,5 +66,4 @@ public abstract class BaseObjectiveController <T extends QuestionExamEntity> ext
     public Mono<WebResult> editChoiceQst(@Valid @RequestBody T bigQuestion) {
         return service.editQuestion(bigQuestion, ChoiceQst.class).map(WebResult::okResult);
     }
-
 }

@@ -6,17 +6,14 @@ import com.alibaba.fastjson.JSONPath;
 import com.project.quiz.common.DefineCode;
 import com.project.quiz.common.MyAssert;
 import com.project.quiz.exceptions.ExamQuestionsException;
-import com.project.quiz.interaction.service.Key.SingleQueKey;
 import com.project.quiz.questionlibrary.domain.BigQuestion;
 import com.project.quiz.questionlibrary.domain.question.ChoiceQst;
 import com.project.quiz.questionlibrary.domain.question.TrueOrFalse;
-import com.project.quiz.questionlibrary.repository.BigQuestionRepository;
 import com.project.quiz.repository.ProblemSetBackupRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
-import java.time.Duration;
 
 import static com.project.quiz.common.Dic.*;
 
@@ -32,37 +29,40 @@ public class CorrectService {
 
     private final ProblemSetBackupRepository problemSetBackupRepository;
 
-    private final BigQuestionRepository bigQuestionRepository;
+//    private final BigQuestionRepository bigQuestionRepository;
 
     private final ReactiveStringRedisTemplate stringRedisTemplate;
 
-    public CorrectService(ProblemSetBackupRepository problemSetBackupRepository, BigQuestionRepository bigQuestionRepository, ReactiveStringRedisTemplate stringRedisTemplate) {
+    public CorrectService(ProblemSetBackupRepository problemSetBackupRepository,
+//                          BigQuestionRepository bigQuestionRepository,
+                          ReactiveStringRedisTemplate stringRedisTemplate) {
         this.problemSetBackupRepository = problemSetBackupRepository;
-        this.bigQuestionRepository = bigQuestionRepository;
+//        this.bigQuestionRepository = bigQuestionRepository;
         this.stringRedisTemplate = stringRedisTemplate;
     }
 
 
     //TODO  题目回答更正回答记录
-    public Mono<Boolean> correcting(final String key, final String questionId, final String answer) {
-        //找到题目信息 TODO OLD
-        return getBigQuestion(key, questionId)
-                .flatMap(bigQuestion -> {
-                    return result(bigQuestion, answer);
-                });
-    }
+//    public Mono<Boolean> correcting(final String key, final String questionId, final String answer) {
+//        //找到题目信息 TODO OLD
+//        return getBigQuestion(key, questionId)
+//                .flatMap(bigQuestion -> {
+//                    return result(bigQuestion, answer);
+//                });
+//    }
 
     /**
      * 从Redis或Mongo获得题目内容
      *
-     * @param questionId
+//     * @param questionId
      * @return
      */
-    public Mono<BigQuestion> getBigQuestion(String key, String questionId) {
-        //String key= BigQueKey.questionsNow(questionId);
-        return stringRedisTemplate.hasKey(key)
-                .flatMap(r -> r.booleanValue() ? stringRedisTemplate.opsForValue().get(key).flatMap(str -> Mono.just(JSON.parseObject(str, BigQuestion.class))) : bigQuestionRepository.findById(questionId).filterWhen(obj -> stringRedisTemplate.opsForValue().set(SingleQueKey.questionsNow(questionId), JSON.toJSONString(obj), Duration.ofSeconds(60 * 60 * 2))));
-    }
+//    public Mono<BigQuestion> getBigQuestion(String key, String questionId) {
+//        //String key= BigQueKey.questionsNow(questionId);
+//        return stringRedisTemplate.hasKey(key)
+//                .flatMap(r -> r.booleanValue() ? stringRedisTemplate.opsForValue().get(key)
+//                        .flatMap(str -> Mono.just(JSON.parseObject(str, BigQuestion.class))) : bigQuestionRepository.findById(questionId).filterWhen(obj -> stringRedisTemplate.opsForValue().set(SingleQueKey.questionsNow(questionId), JSON.toJSONString(obj), Duration.ofSeconds(60 * 60 * 2))));
+//    }
 
 
     private boolean choice(final ChoiceQst choiceQst, final String answer) {

@@ -1,15 +1,15 @@
 package com.project.quiz.questionlibrary.web.control;
 
 
-import com.project.quiz.questionlibrary.domain.BigQuestion;
-import com.project.quiz.questionlibrary.service.base.BaseQuestionService;
-import com.project.quiz.questionlibrary.web.control.base.BaseAllController;
-import com.project.quiz.service.TokenService;
-import io.swagger.annotations.Api;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+//import com.project.quiz.questionlibrary.domain.BigQuestion;
+//import com.project.quiz.questionlibrary.service.base.BaseQuestionService;
+//import com.project.quiz.questionlibrary.web.control.base.BaseAllController;
+//import com.project.quiz.service.TokenService;
+//import io.swagger.annotations.Api;
+//import lombok.extern.slf4j.Slf4j;
+//import org.springframework.http.MediaType;
+//import org.springframework.web.bind.annotation.RequestMapping;
+//import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @Description:
@@ -17,14 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
  * @version: V1.0
  * @date: 2018/11/13  10:43
  */
-@Slf4j
-@RestController
-@Api(value = "考试 练习 题目", tags = {"考试 练习 题库内容操作"})
-@RequestMapping(path = "/question", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-public class BigQuestionsController extends BaseAllController<BigQuestion> {
-    public BigQuestionsController(BaseQuestionService<BigQuestion> service, TokenService tokenService) {
-        super(service, tokenService);
-    }
+//@Slf4j
+//@RestController
+//@Api(value = "考试 练习 题目", tags = {"考试 练习 题库内容操作"})
+//@RequestMapping(path = "/question", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+//public class BigQuestionsController extends BaseAllController<BigQuestion> {
+//    public BigQuestionsController(BaseQuestionService<BigQuestion> service, TokenService tokenService) {
+//        super(service, tokenService);
+//    }
+
 
 //    private final BigQuestionService bigQuestionService;
 
@@ -93,4 +94,4 @@ public class BigQuestionsController extends BaseAllController<BigQuestion> {
 //        return bigQuestionService.addChildren(addChildrenVo.getQuestionId(), addChildrenVo.getJson(), addChildrenVo.getTeacherId()).map(WebResult::okResult);
 //    }
 
-}
+//}

@@ -10,7 +10,9 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
-import static com.project.quiz.common.KeyStorage.STUDENT_ADO;
+import static com.project.quiz.common.Dic.STUDENT_ADO;
+
+//import static com.project.quiz.common.KeyStorage.STUDENT_ADO;
 
 /**
  * @Description:
