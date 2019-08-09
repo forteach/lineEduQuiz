@@ -18,41 +18,27 @@ import lombok.EqualsAndHashCode;
 @ApiModel(value = "题库条件查询", description = "题库条件查询")
 public class QuestionBankReq extends SortVo {
 
+    @ApiModelProperty(name = "courseId", value = "课程id", dataType = "string")
+    private String courseId;
     /**
      * 章节id
      */
-    @ApiModelProperty(value = "章节id", name = "chapterId", example = "463bcd8e5fed4a33883850c14f877271")
+    @ApiModelProperty(value = "章节id", name = "chapterId", dataType = "string",example = "463bcd8e5fed4a33883850c14f877271")
     protected String chapterId;
-
     /**
      * 难易度id
      */
-    @ApiModelProperty(value = "难易度id", name = "levelId", example = "0")
+    @ApiModelProperty(value = "难易度id", name = "levelId", dataType = "string", example = "0")
     private String levelId;
-
-    /**
-     * 知识点id
-     */
-//    @ApiModelProperty(value = "知识点id", name = "knowledgeId", example = "0")
-//    private String knowledgeId;
-
-
     /**
      * 题目类型
      */
     @ApiModelProperty(value = "题目类型 single  multiple trueOrFalse design bigQuestion", name = "questionType", example = "single")
-    private String questionType;
+    private String examType;
 
     /**
      * 显示全部详情或者是只返回id
      */
     @ApiModelProperty(value = "显示全部详情或者是只返回id all 全部/part 只显示id", name = "questionType", example = "part")
     private String allOrPart;
-
-    /**
-     * 关键字
-     */
-//    @ApiModelProperty(value = "关键字", name = "keyword", example = "")
-//    private String[] keyword;
-
 }

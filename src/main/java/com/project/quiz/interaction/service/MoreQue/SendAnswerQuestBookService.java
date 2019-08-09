@@ -1,6 +1,5 @@
 package com.project.quiz.interaction.service.MoreQue;
 
-import com.project.quiz.service.CorrectService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.redis.core.ReactiveHashOperations;
@@ -15,17 +14,17 @@ public class SendAnswerQuestBookService {
 
     private final ReactiveStringRedisTemplate stringRedisTemplate;
     private final ReactiveHashOperations<String, String, String> reactiveHashOperations;
-    private final CorrectService correctService;
+//    private final CorrectService correctService;
     private final ReactiveMongoTemplate reactiveMongoTemplate;
 
 
     public SendAnswerQuestBookService(ReactiveStringRedisTemplate stringRedisTemplate,
                                       ReactiveHashOperations<String, String, String> reactiveHashOperations,
-                                      CorrectService correctService,
+//                                      CorrectService correctService,
                                       ReactiveMongoTemplate reactiveMongoTemplate) {
         this.stringRedisTemplate = stringRedisTemplate;
         this.reactiveHashOperations = reactiveHashOperations;
-        this.correctService = correctService;
+//        this.correctService = correctService;
         this.reactiveMongoTemplate = reactiveMongoTemplate;
     }
 

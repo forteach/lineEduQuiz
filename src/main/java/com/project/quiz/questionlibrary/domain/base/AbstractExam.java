@@ -1,9 +1,11 @@
 package com.project.quiz.questionlibrary.domain.base;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.project.quiz.domain.BaseEntity;
 import com.project.quiz.web.vo.BigQuestionView;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * @Description:
@@ -12,14 +14,17 @@ import lombok.Data;
  * @date: 2018/11/15  0:15
  */
 @Data
-public abstract class AbstractExam {
+@EqualsAndHashCode(callSuper = true)
+public abstract class AbstractExam extends BaseEntity {
 
     /**
      * 题目id
      */
-    @JsonView(BigQuestionView.Summary.class)
-    @ApiModelProperty(value = "题目id", name = "id", required = true, example = "463bcd8e5fed4a33883850c14f877271")
-    protected String id;
+    @ApiModelProperty(value = "章节id", name = "id", required = true, dataType = "string", example = "463bcd8e5fed4a33883850c14f877271")
+    protected String chapterId;
+
+    @ApiModelProperty(name = "courseId", value = "课程id", required = true, dataType = "string")
+    private String courseId;
 
     /**
      * 题目分数
@@ -36,15 +41,29 @@ public abstract class AbstractExam {
     /**
      * 考题类型   single  multiple trueOrFalse  design  bigQuestion
      */
-    @JsonView(BigQuestionView.Summary.class)
-    @ApiModelProperty(value = "考题类型 后台自动赋值 single  multiple trueOrFalse  design  bigQuestion", name = "id", example = "trueOrFalse")
+    @ApiModelProperty(value = "考题类型 后台自动赋值 single  multiple trueOrFalse  design  bigQuestion", name = "id", required = true, example = "single")
     protected String examType;
 
     /**
-     * 是否修改应用到所有的练习册
-     * 1 : 应用到所有练习册    0  :  只修改本题
+     * 题目题干
      */
-//    @ApiModelProperty(value = "题目id", name = "id", example = "0")
-//    private int relate;
+    @ApiModelProperty(value = "题目题干", name = "choiceQstTxt", required = true, example = "1+1 = ?")
+    private String choiceQstTxt;
 
+    /**
+     * 回答答案
+     */
+    @JsonView(BigQuestionView.Summary.class)
+    @ApiModelProperty(value = "题目答案", name = "answer", required = true, example = "A")
+    private String answer;
+
+    @JsonView(BigQuestionView.Summary.class)
+    @ApiModelProperty(value = "题目解析", name = "choiceQstAnalysis", example = "A选项正确")
+    private String analysis;
+
+    /**
+     * 难易度id
+     */
+    @ApiModelProperty(value = "难易度id", name = "levelId", example = "0")
+    private String levelId;
 }

@@ -1,4 +1,4 @@
-package com.project.quiz.questionlibrary.service.base;
+package com.project.quiz.questionlibrary.service.base.impl;
 
 
 import cn.hutool.core.date.DateUtil;
@@ -8,20 +8,23 @@ import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import com.project.quiz.exceptions.CustomException;
 import com.project.quiz.exceptions.ExamQuestionsException;
-import com.project.quiz.questionlibrary.domain.base.QuestionExamEntity;
+import com.project.quiz.questionlibrary.domain.base.AbstractExam;
 import com.project.quiz.questionlibrary.reflect.QuestionReflect;
-import com.project.quiz.questionlibrary.repository.base.QuestionMongoRepository;
+import com.project.quiz.questionlibrary.repository.base.BaseQuestionMongoRepository;
+import com.project.quiz.questionlibrary.service.base.BaseQuestionService;
 import com.project.quiz.questionlibrary.web.req.QuestionBankReq;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.project.quiz.common.Dic.*;
 
@@ -31,14 +34,17 @@ import static com.project.quiz.common.Dic.*;
  * @version: V1.0
  * @date: 2019/1/10  11:53
  */
-public abstract class BaseQuestionServiceImpl<T extends QuestionExamEntity> implements BaseQuestionService<T> {
+@Service
+@Slf4j
+public class BaseQuestionServiceImpl<T extends AbstractExam> implements BaseQuestionService<T> {
 
-    protected final ReactiveMongoTemplate reactiveMongoTemplate;
-    private final QuestionMongoRepository<T> repository;
+    private final BaseQuestionMongoRepository repository;
+    private final ReactiveMongoTemplate reactiveMongoTemplate;
     private final QuestionReflect questionReflect;
 
-    public BaseQuestionServiceImpl(QuestionMongoRepository<T> repository,
-                                   ReactiveMongoTemplate reactiveMongoTemplate, QuestionReflect questionReflect) {
+    public BaseQuestionServiceImpl(ReactiveMongoTemplate reactiveMongoTemplate,
+                                   QuestionReflect questionReflect,
+                                   BaseQuestionMongoRepository repository) {
         this.repository = repository;
         this.reactiveMongoTemplate = reactiveMongoTemplate;
         this.questionReflect = questionReflect;
@@ -52,7 +58,7 @@ public abstract class BaseQuestionServiceImpl<T extends QuestionExamEntity> impl
      */
     @Override
     public Mono<T> editQuestion(final T bigQuestion, final Class obj) {
-        return editQuestions(setQuestionUUID(bigQuestion, obj)).flatMap(t -> {
+        return editQuestion(setQuestionUUID(bigQuestion, obj)).flatMap(t -> {
             Mono<UpdateResult> questionBankMono = questionBankAssociation(t.getId(), t.getTeacherId());
             return questionBankMono.flatMap(
                     updateResult -> {
@@ -66,18 +72,9 @@ public abstract class BaseQuestionServiceImpl<T extends QuestionExamEntity> impl
         });
     }
 
-    /**
-     * 修改是是否更新到课后练习册
-     *
-     * @param bigQuestion
-     * @return
-     */
     @Override
-    public Mono<T> editQuestions(final T bigQuestion) {
+    public Mono<T> editQuestion(final T bigQuestion) {
         bigQuestion.setUDate(DateUtil.now());
-//        if (bigQuestion.getRelate() == COVER_QUESTION_BANK) {
-//            return editQuestionsCover(bigQuestion);
-//        }
         return repository.save(bigQuestion);
     }
 
@@ -88,38 +85,9 @@ public abstract class BaseQuestionServiceImpl<T extends QuestionExamEntity> impl
      * @return
      */
     private T setQuestionUUID(final T bigQuestion, final Class obj) {
-        bigQuestion.setExamChildren((List) bigQuestion.getExamChildren()
-                .stream()
-                .peek(question -> {
-                    questionReflect.buildAttribute(JSON.parseObject(JSON.toJSONString(question), obj));
-                })
-                .collect(Collectors.toList()));
+        questionReflect.buildAttribute(JSON.parseObject(JSON.toJSONString(bigQuestion), obj));
         return bigQuestion;
     }
-
-    /**
-     * 修改课后练习册
-     *
-     * @param bigQuestion
-     * @return
-     */
-//    private Mono<T> editQuestionsCover(final T bigQuestion) {
-//
-//        Query query = Query.query(Criteria.where(QUESTION_CHILDREN + "." + MONGDB_ID).is(bigQuestion.getId()));
-//        Update update = new Update();
-//        update.set("questionChildren.$.paperInfo", bigQuestion.getPaperInfo());
-//        update.set("questionChildren.$.examChildren", bigQuestion.getExamChildren());
-////        update.set("questionChildren.$.type", bigQuestion.getType());
-//        update.set("questionChildren.$.score", bigQuestion.getScore());
-//        return reactiveMongoTemplate.updateMulti(query, update, ExerciseBook.class).map(UpdateResult::getMatchedCount).flatMap(obj -> {
-//            if (obj != -1) {
-//                return repository.save(bigQuestion);
-//            } else {
-//                return Mono.error(new ProblemSetException("更新失败"));
-//            }
-//        });
-//
-//    }
 
     /**
      * 更新题目与教师关系信息
@@ -128,25 +96,23 @@ public abstract class BaseQuestionServiceImpl<T extends QuestionExamEntity> impl
      * @param teacherId
      * @return
      */
-//    @Override
-//    public Mono<UpdateResult> questionBankAssociation(final String questionBankId, final String teacherId) {
-//        return reactiveMongoTemplate
-//                .upsert(Query.query(Criteria.where(MONGDB_ID)
-//                        .is(questionBankId)), new Update()
-//                        .addToSet(MONGDB_COLUMN_QUESTION_BANK_TEACHER, teacherId), QuestionBank.class);
-//    }
+    @Override
+    public Mono<UpdateResult> questionBankAssociation(final String questionBankId, final String teacherId) {
+        return reactiveMongoTemplate.upsert(Query.query(Criteria.where(MONGDB_ID).is(questionBankId)),
+                new Update().set(MONGDB_COLUMN_QUESTION_TEACHER_ID, teacherId), AbstractExam.class);
+    }
 
     /**
      * 题目分享
      *
      * @param questionBankId
      * @param teacherId
-     * @return
+     * @return Mono<Boolean>
      */
-//    @Override
-//    public Mono<Boolean> questionBankAssociationAdd(final String questionBankId, final String teacherId) {
-//        return questionBankAssociation(questionBankId, teacherId).map(UpdateResult::isModifiedCountAvailable);
-//    }
+    @Override
+    public Mono<Boolean> questionBankAssociationAdd(final String questionBankId, final String teacherId) {
+        return questionBankAssociation(questionBankId, teacherId).map(UpdateResult::isModifiedCountAvailable);
+    }
 
     /**
      * 获取泛型的class
@@ -174,7 +140,7 @@ public abstract class BaseQuestionServiceImpl<T extends QuestionExamEntity> impl
      * @return
      */
     @Override
-    public Mono<Void> delQuestions(final String id) {
+    public Mono<Void> delQuestion(final String id) {
         return repository.deleteById(id)
                 .and(delBankAssociation(Collections.singletonList(id)));
     }
@@ -208,9 +174,9 @@ public abstract class BaseQuestionServiceImpl<T extends QuestionExamEntity> impl
 
         query.fields()
                 .include(MONGDB_ID)
+                .include("courseId")
                 .include("chapterId")
                 .include("levelId")
-//                .include("knowledgeId")
                 .include("examType")
                 .include("teacherId")
                 .include("uDate");
@@ -243,25 +209,19 @@ public abstract class BaseQuestionServiceImpl<T extends QuestionExamEntity> impl
      */
     @SuppressWarnings(value = "all")
     private Query buildFindQuestion(final QuestionBankReq sortVo) {
-
         Criteria criteria = Criteria.where("teacherId").is(sortVo.getOperatorId());
-
         if (StrUtil.isNotEmpty(sortVo.getLevelId())) {
             criteria.and("levelId").is(sortVo.getLevelId());
         }
         if (StrUtil.isNotEmpty(sortVo.getChapterId())) {
             criteria.and("chapterId").is(sortVo.getChapterId());
         }
-//        if (StrUtil.isNotEmpty(sortVo.getKnowledgeId())) {
-//            criteria.and("knowledgeId").is(sortVo.getKnowledgeId());
-//        }
-        if (StrUtil.isNotEmpty(sortVo.getQuestionType())) {
-            criteria.and("examChildren.examType").is(sortVo.getQuestionType());
+        if (StrUtil.isNotEmpty(sortVo.getCourseId())) {
+            criteria.and("courseId").is(sortVo.getCourseId());
         }
-//        if (sortVo.getKeyword() != null && sortVo.getKeyword().length > 0) {
-//            criteria.and("keyword").all(sortVo.getKeyword());
-//        }
-
+        if (StrUtil.isNotEmpty(sortVo.getExamType())) {
+            criteria.and("examType").is(sortVo.getExamType());
+        }
         return new Query(criteria);
     }
 
@@ -278,8 +238,9 @@ public abstract class BaseQuestionServiceImpl<T extends QuestionExamEntity> impl
 
     /**
      * 查找题 in
+     * <p>
+     * //     * @param ids
      *
-     * @param ids
      * @return
      */
     @Override

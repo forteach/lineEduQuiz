@@ -21,7 +21,7 @@ public class Dic {
     /**
      * mongodb
      */
-    public static final String MONGDB_COLUMN_QUESTION_BANK_TEACHER = "teachers";
+    public static final String MONGDB_COLUMN_QUESTION_TEACHER_ID = "teacherId";
 
     /**
      *

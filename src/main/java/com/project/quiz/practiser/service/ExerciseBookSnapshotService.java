@@ -1,7 +1,6 @@
 package com.project.quiz.practiser.service;
 
 
-import com.project.quiz.service.CorrectService;
 import com.project.quiz.service.StudentsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,7 @@ import org.springframework.stereotype.Service;
 public class ExerciseBookSnapshotService {
 
     private final ReactiveMongoTemplate reactiveMongoTemplate;
-    private final CorrectService correctService;
+//    private final CorrectService correctService;
     private final StudentsService studentsService;
     private final BaseExerciseAnswerService baseExerciseAnswerService;
     private final ExerciseAnswerService exerciseAnswerService;
@@ -30,10 +29,11 @@ public class ExerciseBookSnapshotService {
     public ExerciseBookSnapshotService(ReactiveMongoTemplate reactiveMongoTemplate, ExerciseAnswerService exerciseAnswerService,
                                        BaseExerciseAnswerService baseExerciseAnswerService,
 //                                       BigQuestionExerciseBookService bigQuestionExerciseBookService,
-                                       CorrectService correctService, StudentsService studentsService) {
+//                                       CorrectService correctService,
+                                       StudentsService studentsService) {
         this.reactiveMongoTemplate = reactiveMongoTemplate;
         this.studentsService = studentsService;
-        this.correctService = correctService;
+//        this.correctService = correctService;
         this.baseExerciseAnswerService = baseExerciseAnswerService;
         this.exerciseAnswerService = exerciseAnswerService;
 //        this.bigQuestionExerciseBookService = bigQuestionExerciseBookService;

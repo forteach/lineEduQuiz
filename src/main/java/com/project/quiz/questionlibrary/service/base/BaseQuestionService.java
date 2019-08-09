@@ -2,7 +2,7 @@ package com.project.quiz.questionlibrary.service.base;
 
 
 import com.mongodb.client.result.UpdateResult;
-import com.project.quiz.questionlibrary.domain.base.QuestionExamEntity;
+import com.project.quiz.questionlibrary.domain.base.AbstractExam;
 import com.project.quiz.questionlibrary.web.req.QuestionBankReq;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -15,16 +15,16 @@ import java.util.List;
  * @version: V1.0
  * @date: 2019/1/10  11:52
  */
-public interface BaseQuestionService<T extends QuestionExamEntity> {
+public interface BaseQuestionService<T extends AbstractExam> {
 
     /**
      * 修改新增判断题
      *
-     * @param bigQuestion
+     * @param question
      * @param obj
      * @return
      */
-    Mono<T> editQuestion(final T bigQuestion, final Class obj);
+    Mono<T> editQuestion(final T question, final Class obj);
 
     /**
      * 题目分享
@@ -33,7 +33,7 @@ public interface BaseQuestionService<T extends QuestionExamEntity> {
 //     * @param teacherId
 //     * @return
      */
-//    Mono<Boolean> questionBankAssociationAdd(final String questionBankId, final String teacherId);
+    Mono<Boolean> questionBankAssociationAdd(final String questionBankId, final String teacherId);
 
     /**
      * 删除单道题
@@ -41,7 +41,7 @@ public interface BaseQuestionService<T extends QuestionExamEntity> {
      * @param id
      * @return
      */
-    Mono<Void> delQuestions(final String id);
+    Mono<Void> delQuestion(final String id);
 
     /**
      * 查询详细或全部字段的问题
@@ -62,10 +62,11 @@ public interface BaseQuestionService<T extends QuestionExamEntity> {
     /**
      * 修改是是否更新到课后练习册
      *
-     * @param bigQuestion
+     * @param question
      * @return
      */
-    Mono<T> editQuestions(final T bigQuestion);
+    Mono<T> editQuestion(final T question);
+
 
     /**
      * 更新题目与教师关系信息

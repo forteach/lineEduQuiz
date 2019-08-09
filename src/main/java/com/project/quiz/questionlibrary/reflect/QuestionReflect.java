@@ -96,12 +96,7 @@ public class QuestionReflect {
             setExamType.invoke(object, choiceType);
             setupOptChildrenId(object, clazz);
 
-        }
-//        else if (Design.class.isAssignableFrom(clazz)) {
-            //设置主观题参数
-//            setExamType.invoke(object, "design");
-//        }
-        else {
+        } else {
             throw new CustomException("获取题目type 出错");
         }
     }
