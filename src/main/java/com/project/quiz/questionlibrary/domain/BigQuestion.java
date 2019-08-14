@@ -2,14 +2,14 @@ package com.project.quiz.questionlibrary.domain;
 
 
 //import cn.hutool.core.date.DateUtil;
+
 import com.project.quiz.questionlibrary.domain.base.AbstractExam;
-//import com.project.quiz.questionlibrary.domain.base.QuestionExamEntity;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.List;
+//import com.project.quiz.questionlibrary.domain.base.QuestionExamEntity;
 
 /**
  * @Description: 所有的题目类型 全部由大题外部封装   由examChildren展示具体的题目信息
@@ -17,10 +17,10 @@ import java.util.List;
  * @version: V1.0
  * @date: 2018/11/15  11:04
  */
-@EqualsAndHashCode(callSuper = true)
 @Data
 @Document(collection = "bigQuestion")
-@ApiModel(value = "题对象", description = "所有的题目类型 全部由大题外部封装   由examChildren展示具体的题目信息")
-public class BigQuestion<T> extends AbstractExam {
+@EqualsAndHashCode(callSuper = true)
+@ApiModel(value = "题对象", description = "所有的题目类型 全部由大题外部封装 由examChildren展示具体的题目信息")
+public class BigQuestion extends AbstractExam {
 
 }

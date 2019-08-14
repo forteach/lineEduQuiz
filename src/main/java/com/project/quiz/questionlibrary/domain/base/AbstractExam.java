@@ -3,6 +3,7 @@ package com.project.quiz.questionlibrary.domain.base;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.project.quiz.domain.BaseEntity;
 import com.project.quiz.web.vo.BigQuestionView;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,16 +21,19 @@ public abstract class AbstractExam extends BaseEntity {
     /**
      * 题目id
      */
-    @ApiModelProperty(value = "章节id", name = "id", required = true, dataType = "string", example = "463bcd8e5fed4a33883850c14f877271")
+    @ApiModelProperty(value = "章节id", name = "chapterId", required = true, dataType = "string", example = "463bcd8e5fed4a33883850c14f877271")
     protected String chapterId;
 
     @ApiModelProperty(name = "courseId", value = "课程id", required = true, dataType = "string")
     private String courseId;
 
+    @ApiModelProperty(name = "courseName", value = "章节名称", required = true, dataType = "string")
+    private String courseName;
+
     /**
      * 题目分数
      */
-    @ApiModelProperty(value = "题目分数", name = "score", required = true, example = "2.0")
+    @ApiModelProperty(value = "题目分数", name = "score", required = true, dataType = "number", example = "2.0")
     protected Double score;
 
     /**
@@ -41,7 +45,7 @@ public abstract class AbstractExam extends BaseEntity {
     /**
      * 考题类型   single  multiple trueOrFalse  design  bigQuestion
      */
-    @ApiModelProperty(value = "考题类型 后台自动赋值 single  multiple trueOrFalse  design  bigQuestion", name = "id", required = true, example = "single")
+    @ApiModelProperty(value = "考题类型  single  multiple trueOrFalse  design  bigQuestion", name = "examType", required = true, example = "single")
     protected String examType;
 
     /**
@@ -58,7 +62,7 @@ public abstract class AbstractExam extends BaseEntity {
     private String answer;
 
     @JsonView(BigQuestionView.Summary.class)
-    @ApiModelProperty(value = "题目解析", name = "choiceQstAnalysis", example = "A选项正确")
+    @ApiModelProperty(value = "题目解析", name = "analysis", example = "A选项正确")
     private String analysis;
 
     /**

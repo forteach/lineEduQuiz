@@ -1,64 +1,88 @@
 package com.project.quiz.questionlibrary.service;
 
+
 import com.mongodb.client.result.UpdateResult;
-import com.project.quiz.questionlibrary.domain.QuestionList;
-import com.project.quiz.questionlibrary.service.base.BaseQuestionService;
+import com.project.quiz.questionlibrary.domain.base.AbstractExam;
 import com.project.quiz.questionlibrary.web.req.QuestionBankReq;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 
 /**
- * @author: zhangyy
- * @email: zhang10092009@hotmail.com
- * @date: 19-8-9 16:05
- * @version: 1.0
- * @description:
+ * @Description: 问题结构的基础服务
+ * @author: liu zhenming
+ * @version: V1.0
+ * @date: 2019/1/10  11:52
  */
-@Service
-@Slf4j
-public class QuestionService implements BaseQuestionService<QuestionList> {
+public interface QuestionService<T> {
 
-    @Override
-    public Mono<QuestionList> editQuestion(QuestionList question, Class obj) {
-        return null;
-    }
+    /**
+     * 修改新增判断题
+     *
+     * @param question
+     * @param obj
+     * @return
+     */
+    Mono<T> editQuestion(final T question, final Class obj);
 
-    @Override
-    public Mono<Boolean> questionBankAssociationAdd(String questionBankId, String teacherId) {
-        return null;
-    }
+    /**
+     * 题目分享
+     *
+//     * @param questionBankId
+//     * @param teacherId
+//     * @return
+     */
+    Mono<Boolean> questionBankAssociationAdd(final String questionBankId, final String teacherId);
 
-    @Override
-    public Mono<Void> delQuestion(String id) {
-        return null;
-    }
+    /**
+     * 删除单道题
+     *
+     * @param id
+     * @return
+     */
+    Mono<Void> delQuestion(final String id);
 
-    @Override
-    public Flux<QuestionList> findAllDetailed(QuestionBankReq sortVo) {
-        return null;
-    }
+    /**
+     * 查询详细或全部字段的问题
+     *
+     * @param sortVo
+     * @return
+     */
+    Flux<T> findAllDetailed(final QuestionBankReq sortVo);
 
-    @Override
-    public Mono<QuestionList> findOneDetailed(String id) {
-        return null;
-    }
+    /**
+     * 根据id查询详细
+     *
+     * @param id
+     * @return
+     */
+    Mono<T> findOneDetailed(final String id);
 
-    @Override
-    public Mono<QuestionList> editQuestion(QuestionList question) {
-        return null;
-    }
+    /**
+     * 修改是是否更新到课后练习册
+     *
+     * @param question
+     * @return
+     */
+    Mono<T> editQuestion(final T question);
 
-    @Override
-    public Mono<UpdateResult> questionBankAssociation(String questionBankId, String teacherId) {
-        return null;
-    }
 
-    @Override
-    public Flux<QuestionList> findBigQuestionInId(List<String> ids) {
-        return null;
-    }
+    /**
+     * 更新题目与教师关系信息
+     *
+     * @param questionBankId
+     * @param teacherId
+     * @return
+     */
+    Mono<UpdateResult> questionBankAssociation(final String questionBankId, final String teacherId);
+
+    /**
+     * 查找题用于
+     * @param ids
+     * @return
+     */
+    Flux<T> findBigQuestionInId(final List<String> ids);
+
+    Mono<Boolean> editBigQuestion(T bigQuestion);
 }

@@ -1,4 +1,4 @@
-package com.project.quiz.questionlibrary.service.base.impl;
+package com.project.quiz.questionlibrary.service.impl;
 
 
 import cn.hutool.core.date.DateUtil;
@@ -6,12 +6,14 @@ import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
+import com.project.quiz.common.DefineCode;
+import com.project.quiz.common.MyAssert;
 import com.project.quiz.exceptions.CustomException;
 import com.project.quiz.exceptions.ExamQuestionsException;
 import com.project.quiz.questionlibrary.domain.base.AbstractExam;
 import com.project.quiz.questionlibrary.reflect.QuestionReflect;
 import com.project.quiz.questionlibrary.repository.base.BaseQuestionMongoRepository;
-import com.project.quiz.questionlibrary.service.base.BaseQuestionService;
+import com.project.quiz.questionlibrary.service.QuestionService;
 import com.project.quiz.questionlibrary.web.req.QuestionBankReq;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
@@ -23,8 +25,10 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.lang.reflect.ParameterizedType;
+import java.sql.Struct;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static com.project.quiz.common.Dic.*;
 
@@ -36,15 +40,15 @@ import static com.project.quiz.common.Dic.*;
  */
 @Service
 @Slf4j
-public class BaseQuestionServiceImpl<T extends AbstractExam> implements BaseQuestionService<T> {
+public class QuestionServiceImpl<T extends AbstractExam> implements QuestionService<T> {
 
     private final BaseQuestionMongoRepository repository;
     private final ReactiveMongoTemplate reactiveMongoTemplate;
     private final QuestionReflect questionReflect;
 
-    public BaseQuestionServiceImpl(ReactiveMongoTemplate reactiveMongoTemplate,
-                                   QuestionReflect questionReflect,
-                                   BaseQuestionMongoRepository repository) {
+    public QuestionServiceImpl(ReactiveMongoTemplate reactiveMongoTemplate,
+                               QuestionReflect questionReflect,
+                               BaseQuestionMongoRepository repository) {
         this.repository = repository;
         this.reactiveMongoTemplate = reactiveMongoTemplate;
         this.questionReflect = questionReflect;
@@ -246,5 +250,59 @@ public class BaseQuestionServiceImpl<T extends AbstractExam> implements BaseQues
     @Override
     public Flux<T> findBigQuestionInId(final List<String> ids) {
         return reactiveMongoTemplate.find(Query.query(Criteria.where(MONGDB_ID).in(ids)), entityClass());
+    }
+
+    @Override
+    public Mono<Boolean> editBigQuestion(T bigQuestion) {
+        if (StrUtil.isNotBlank(bigQuestion.getId())){
+            //修改
+            return reactiveMongoTemplate.upsert(Query.query(Criteria.where(MONGDB_ID).is(bigQuestion.getId())),
+                    setUpdate(bigQuestion),
+                    entityClass()).map(UpdateResult::wasAcknowledged).map(b ->
+                MyAssert.isFalse(b, DefineCode.ERR0010, "修改失败")
+            ).map(Objects::nonNull);
+        }else {
+            //新增
+            return reactiveMongoTemplate.save(bigQuestion)
+                    .doOnError(t -> MyAssert.isNull(null, DefineCode.ERR0012, "保存失败"))
+                    .flatMap(b -> {
+                        return Mono.just(true);
+                    });
+        }
+    }
+
+    private Update setUpdate(T bigQuestion){
+        Update update = new Update();
+        if (StrUtil.isNotBlank(bigQuestion.getTeacherId())){
+            update.set("teacherId", bigQuestion.getTeacherId());
+        }
+        if (StrUtil.isNotBlank(bigQuestion.getAnalysis())){
+            update.set("analysis", bigQuestion.getAnalysis());
+        }
+        if (StrUtil.isNotBlank(bigQuestion.getAnswer())){
+            update.set("answer", bigQuestion.getAnswer());
+        }
+        if (StrUtil.isNotBlank(bigQuestion.getChapterId())){
+            update.set("chapterId", bigQuestion.getChapterId());
+        }
+        if (StrUtil.isNotBlank(bigQuestion.getChoiceQstTxt())){
+            update.set("choiceQstTxt", bigQuestion.getChoiceQstTxt());
+        }
+        if (StrUtil.isNotBlank(bigQuestion.getCourseId())){
+            update.set("courseId", bigQuestion.getCourseId());
+        }
+        if (StrUtil.isNotBlank(bigQuestion.getExamType())){
+            update.set("examType", bigQuestion.getExamType());
+        }
+        if (StrUtil.isNotBlank(bigQuestion.getLevelId())){
+            update.set("levelId", bigQuestion.getLevelId());
+        }
+        if (StrUtil.isNotBlank(bigQuestion.getCourseName())){
+            update.set("courseName", bigQuestion.getCourseName());
+        }
+        if (StrUtil.isNotBlank(String.valueOf(bigQuestion.getScore()))){
+            update.set("score", bigQuestion.getScore());
+        }
+        return update;
     }
 }
