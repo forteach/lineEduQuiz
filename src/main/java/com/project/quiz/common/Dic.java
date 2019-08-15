@@ -69,22 +69,7 @@ public class Dic {
 
     public static final int UN_COVER_QUESTION_BANK = 0;
 
-    public static final String BIG_QUESTION_EXAM_CHILDREN = "examChildren";
-
-    public static final String QUESTION_CHILDREN = "questionChildren";
-
-    public static final int BOOK_REWRITE = 1;
-
-    public static final int BOOK_UN_REWRITE = 0;
-
-    public static final String CATEGORY_PEOPLE = "people";
-
     public static final String CATEGORY_TEAM = "team";
-
-    public static final String ASK_INTERACTIVE = "interactive";
-
-
-    public static final String ASK_RAISE_HAND = "askRaiseHand";
 
     /**
      * 已回答
@@ -102,9 +87,6 @@ public class Dic {
 
     public static final String QUESTION_TRUEORFALSE = "trueOrFalse";
 
-    public static final String QUESTION_DESIGN = "design";
-
-    public static final String QUESTION_BIGQUESTION = "bigQuestion";
 
     public static final String PARAMETER_ALL = "all";
 
@@ -116,45 +98,7 @@ public class Dic {
 
     public static final String PREVIEW_ALL = "before,now";
 
-    /**
-     * 课程挂接练习题  提问册
-     */
-    public static final String EXE_BOOKTYPE_ASK_QUESTIONS = "1";
 
-    /**
-     * 课程挂接练习题  练习册
-     */
-    public static final String EXE_BOOKTYPE_PREVIEW = "2";
-
-    /**
-     * 课程挂接练习题  课后作业册
-     */
-    public static final String EXE_BOOKTYPE_BOOK_OF_JOB = "3";
-
-    /**
-     * 提问 选中
-     */
-    public static final String ASK_QUESTIONS_SELECTED = "1";
-
-    /**
-     * 提问 未选中
-     */
-    public static final String ASK_QUESTIONS_UN_SELECTED = "2";
-
-    /**
-     * 课堂小组
-     */
-    public static final String ASK_GROUP = "askGroup";
-
-    /**
-     * 新增 课堂提问 小组
-     */
-    public static final String ASK_GROUP_CHANGE_MORE = "1";
-
-    /**
-     * 移除 课堂提问 小组
-     */
-    public static final String ASK_GROUP_CHANGE_LESS = "2";
 
     /**----------微信登录token设置----------*/
     public final static String USER_PREFIX = "userToken$";

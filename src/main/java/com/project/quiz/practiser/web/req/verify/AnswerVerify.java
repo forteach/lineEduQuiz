@@ -17,8 +17,6 @@ public class AnswerVerify {
 
     public void verify(AbstractReq abstractReq){
         MyAssert.isNull(abstractReq.getCourseId(), DefineCode.ERR0010, "课程不为空");
-        MyAssert.isNull(abstractReq.getExeBookType(), DefineCode.ERR0010, "练习册/习题册类型类型不为空");
         MyAssert.isNull(abstractReq.getClassId(), DefineCode.ERR0010, "班级不为空");
-        MyAssert.isNull(abstractReq.getPreview(), DefineCode.ERR0010, "习题类型不为空");
     }
 }

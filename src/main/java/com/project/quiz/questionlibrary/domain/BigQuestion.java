@@ -1,15 +1,10 @@
 package com.project.quiz.questionlibrary.domain;
 
-
-//import cn.hutool.core.date.DateUtil;
-
 import com.project.quiz.questionlibrary.domain.base.AbstractExam;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-//import com.project.quiz.questionlibrary.domain.base.QuestionExamEntity;
 
 /**
  * @Description: 所有的题目类型 全部由大题外部封装   由examChildren展示具体的题目信息

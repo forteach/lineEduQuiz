@@ -10,12 +10,17 @@ import com.project.quiz.common.DefineCode;
 import com.project.quiz.common.MyAssert;
 import com.project.quiz.exceptions.CustomException;
 import com.project.quiz.exceptions.ExamQuestionsException;
+import com.project.quiz.questionlibrary.domain.BigQuestion;
 import com.project.quiz.questionlibrary.domain.base.AbstractExam;
 import com.project.quiz.questionlibrary.reflect.QuestionReflect;
 import com.project.quiz.questionlibrary.repository.base.BaseQuestionMongoRepository;
 import com.project.quiz.questionlibrary.service.QuestionService;
+import com.project.quiz.questionlibrary.web.req.FindQuestionsReq;
 import com.project.quiz.questionlibrary.web.req.QuestionBankReq;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -25,8 +30,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.lang.reflect.ParameterizedType;
-import java.sql.Struct;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -134,7 +137,7 @@ public class QuestionServiceImpl<T extends AbstractExam> implements QuestionServ
      * @return
      */
     private Mono<DeleteResult> delBankAssociation(final List<String> id) {
-        return reactiveMongoTemplate.remove(Query.query(Criteria.where(MONGDB_ID).is(id)), entityClass());
+        return reactiveMongoTemplate.remove(Query.query(Criteria.where(MONGDB_ID).is(id)), BigQuestion.class);
     }
 
     /**
@@ -144,9 +147,10 @@ public class QuestionServiceImpl<T extends AbstractExam> implements QuestionServ
      * @return
      */
     @Override
-    public Mono<Void> delQuestion(final String id) {
+    public Mono<Boolean> delQuestion(final String id) {
         return repository.deleteById(id)
-                .and(delBankAssociation(Collections.singletonList(id)));
+                .doOnError(b -> MyAssert.isFalse(false, DefineCode.ERR0012, "删除失败"))
+                .then(Mono.just(true));
     }
 
     /**
@@ -253,15 +257,14 @@ public class QuestionServiceImpl<T extends AbstractExam> implements QuestionServ
     }
 
     @Override
-    public Mono<Boolean> editBigQuestion(T bigQuestion) {
-        if (StrUtil.isNotBlank(bigQuestion.getId())){
+    public Mono<Boolean> editBigQuestion(BigQuestion bigQuestion) {
+        if (StrUtil.isNotBlank(bigQuestion.getId())) {
             //修改
-            return reactiveMongoTemplate.upsert(Query.query(Criteria.where(MONGDB_ID).is(bigQuestion.getId())),
-                    setUpdate(bigQuestion),
-                    entityClass()).map(UpdateResult::wasAcknowledged).map(b ->
-                MyAssert.isFalse(b, DefineCode.ERR0010, "修改失败")
-            ).map(Objects::nonNull);
-        }else {
+            return reactiveMongoTemplate.upsert(Query.query(Criteria.where(MONGDB_ID).is(bigQuestion.getId())), setUpdate(bigQuestion), BigQuestion.class)
+                    .map(UpdateResult::wasAcknowledged)
+                    .map(b -> MyAssert.isFalse(b, DefineCode.ERR0010, "修改失败"))
+                    .map(Objects::nonNull);
+        } else {
             //新增
             return reactiveMongoTemplate.save(bigQuestion)
                     .doOnError(t -> MyAssert.isNull(null, DefineCode.ERR0012, "保存失败"))
@@ -271,37 +274,70 @@ public class QuestionServiceImpl<T extends AbstractExam> implements QuestionServ
         }
     }
 
-    private Update setUpdate(T bigQuestion){
+    @Override
+    public Mono<Page<BigQuestion>> findPageAll(final FindQuestionsReq req) {
+        Query query = setWherePageAll(req.getCourseId(), req.getChapterId(), req.getTeacherId(), req.getExamType());
+        req.queryPaging(query);
+        Mono<Long> count = reactiveMongoTemplate.count(query, BigQuestion.class);
+        Mono<List<BigQuestion>> list = reactiveMongoTemplate.find(query, BigQuestion.class).collectList();
+        return list.zipWith(count)
+                .map(t -> new PageImpl<>(t.getT1(), PageRequest.of(req.getPage(), req.getSize()), t.getT2()));
+    }
+
+    private Query setWherePageAll(final String courseId, final String chapterId, final String teacherId, final String examType) {
+        Criteria criteria = new Criteria();
+        if (StrUtil.isNotBlank(courseId)) {
+            criteria.and("courseId").is(courseId);
+        }
+        if (StrUtil.isNotBlank(chapterId)) {
+            criteria.and("chapterId").is(chapterId);
+        }
+        if (StrUtil.isNotBlank(teacherId)) {
+            criteria.and("teacherId").is(teacherId);
+        }
+        if (StrUtil.isNotBlank(examType)) {
+            criteria.and("examType").is(examType);
+        }
+        return Query.query(criteria);
+    }
+
+    private Update setUpdate(BigQuestion bigQuestion) {
         Update update = new Update();
-        if (StrUtil.isNotBlank(bigQuestion.getTeacherId())){
+        if (StrUtil.isNotBlank(bigQuestion.getTeacherId())) {
             update.set("teacherId", bigQuestion.getTeacherId());
         }
-        if (StrUtil.isNotBlank(bigQuestion.getAnalysis())){
+        if (StrUtil.isNotBlank(bigQuestion.getAnalysis())) {
             update.set("analysis", bigQuestion.getAnalysis());
         }
-        if (StrUtil.isNotBlank(bigQuestion.getAnswer())){
+        if (StrUtil.isNotBlank(bigQuestion.getAnswer())) {
             update.set("answer", bigQuestion.getAnswer());
         }
-        if (StrUtil.isNotBlank(bigQuestion.getChapterId())){
+        if (StrUtil.isNotBlank(bigQuestion.getChapterId())) {
             update.set("chapterId", bigQuestion.getChapterId());
         }
-        if (StrUtil.isNotBlank(bigQuestion.getChoiceQstTxt())){
+        if (StrUtil.isNotBlank(bigQuestion.getChoiceQstTxt())) {
             update.set("choiceQstTxt", bigQuestion.getChoiceQstTxt());
         }
-        if (StrUtil.isNotBlank(bigQuestion.getCourseId())){
+        if (StrUtil.isNotBlank(bigQuestion.getCourseId())) {
             update.set("courseId", bigQuestion.getCourseId());
         }
-        if (StrUtil.isNotBlank(bigQuestion.getExamType())){
+        if (StrUtil.isNotBlank(bigQuestion.getExamType())) {
             update.set("examType", bigQuestion.getExamType());
         }
-        if (StrUtil.isNotBlank(bigQuestion.getLevelId())){
+        if (StrUtil.isNotBlank(bigQuestion.getLevelId())) {
             update.set("levelId", bigQuestion.getLevelId());
         }
-        if (StrUtil.isNotBlank(bigQuestion.getCourseName())){
+        if (StrUtil.isNotBlank(bigQuestion.getCourseName())) {
             update.set("courseName", bigQuestion.getCourseName());
         }
-        if (StrUtil.isNotBlank(String.valueOf(bigQuestion.getScore()))){
+        if (StrUtil.isNotBlank(String.valueOf(bigQuestion.getScore()))) {
             update.set("score", bigQuestion.getScore());
+        }
+        if (StrUtil.isNotBlank(bigQuestion.getChoiceType())){
+            update.set("choiceType", bigQuestion.getChoiceType());
+        }
+        if (!bigQuestion.getOptChildren().isEmpty()){
+            update.set("optChildren", bigQuestion.getOptChildren());
         }
         return update;
     }

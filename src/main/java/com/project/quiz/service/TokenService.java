@@ -155,4 +155,8 @@ public class TokenService {
         return token.get();
     }
 
+    public Mono<String> findTokenType(ServerHttpRequest request){
+        String token = request.getQueryParams().getFirst("token");
+        return Mono.just(getValue(token, 1));
+    }
 }

@@ -1,6 +1,5 @@
 package com.project.quiz.practiser.web.req;
 
-import com.project.quiz.interaction.web.vo.DataDatumVo;
 import com.project.quiz.practiser.web.req.base.AbstractReq;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -10,7 +9,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * @author: zhangyy
@@ -26,20 +24,8 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public class AnswerReq extends AbstractReq implements Serializable {
 
-    @ApiModelProperty(name = "answer", value = "回答内容", dataType = "string", required = true)
-    private String answer;
-
-    /**
-     * 答案附件
-     */
-    @ApiModelProperty(value = "附件列表", name = "fileList")
-    private List<DataDatumVo> fileList;
-
-    /**
-     * 答案图片列表
-     */
-    @ApiModelProperty(value = "答案图片列表", name = "answerImageList")
-    private List<String> answerImageList;
+    @ApiModelProperty(name = "stuAnswer", value = "回答内容", dataType = "string", required = true)
+    private String stuAnswer;
 
     /**
      * 回答的学生

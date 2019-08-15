@@ -18,9 +18,6 @@ import org.springframework.data.mongodb.core.index.Indexed;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public abstract class AbstractAnswer extends BaseEntity {
-//    @ApiModelProperty(value = "练习册类型: 1、提问册 2、练习册3、作业册", name = "exeBookType", example = "3")
-//    @Indexed
-//    private String exeBookType;
 
     @ApiModelProperty(name = "courseId", value = "课程id", dataType = "string")
     @Indexed
@@ -35,13 +32,6 @@ public abstract class AbstractAnswer extends BaseEntity {
 
     @ApiModelProperty(name = "classId", value = "班级id", dataType = "string")
     private String classId;
-    /**
-     * 课堂练习：before/预习 now/课堂 before,now/全部
-     */
-//    @ApiModelProperty(value = "习题类型  before/预习 now/课堂 after/课后练习", name = "preview", dataType = "string", example = "before")
-//    @Indexed
-//    private String preview;
-
     /**
      * 学生id
      */

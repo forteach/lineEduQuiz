@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.project.quiz.common.WebResult;
 import com.project.quiz.exceptions.AssertErrorException;
 import com.project.quiz.exceptions.CustomException;
-import com.project.quiz.exceptions.ProblemSetException;
 import io.lettuce.core.RedisException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -41,12 +40,6 @@ public class ExceptionHandlers {
     public Mono<WebResult> serverExceptionHandler(ServerWebExchange exchange, Exception e) {
         log.error("全局异常拦截器  [{}]   请求地址 [{}]  /  异常信息  [{}]", e, exchange.getRequest().getPath(), e.getMessage());
         return WebResult.failResultMono();
-    }
-
-    @ExceptionHandler(ProblemSetException.class)
-    public Mono<WebResult> serverExceptionHandler(ServerWebExchange exchange, ProblemSetException e) {
-        log.error("全局异常拦截器  练习册异常 [{}]   请求地址 [{}]  /  异常信息  [{}]", e, exchange.getRequest().getPath(), e.getMessage());
-        return Mono.just(WebResult.failResult(9200, e.getMessage()));
     }
 
     @ExceptionHandler(RedisException.class)

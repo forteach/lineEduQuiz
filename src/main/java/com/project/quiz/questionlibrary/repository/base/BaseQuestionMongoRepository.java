@@ -12,6 +12,6 @@ import org.springframework.data.repository.NoRepositoryBean;
  * @date: 2019/1/10  11:10
  */
 @NoRepositoryBean
-public interface BaseQuestionMongoRepository<T extends AbstractExam> extends ReactiveMongoRepository<T, String> {
+public interface BaseQuestionMongoRepository<T extends AbstractExam> extends ReactiveMongoRepository<T, String>{
 
 }

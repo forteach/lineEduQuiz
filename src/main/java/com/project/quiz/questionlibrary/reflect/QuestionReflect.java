@@ -94,7 +94,7 @@ public class QuestionReflect {
             Method getChoiceType = getChoiceTypeMethod(clazz);
             String choiceType = (String) getChoiceType.invoke(object);
             setExamType.invoke(object, choiceType);
-            setupOptChildrenId(object, clazz);
+//            setupOptChildrenId(object, clazz);
 
         } else {
             throw new CustomException("获取题目type 出错");
@@ -110,21 +110,21 @@ public class QuestionReflect {
      * @throws InvocationTargetException
      * @throws IllegalAccessException
      */
-    private void setupOptChildrenId(final Object object, final Class clazz) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+//    private void setupOptChildrenId(final Object object, final Class clazz) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
-        Method getOptChildren = getOptChildrenMethod(clazz);
-        Method setOptChildren = setOptChildrenMethod(clazz);
+//        Method getOptChildren = getOptChildrenMethod(clazz);
+//        Method setOptChildren = setOptChildrenMethod(clazz);
 
-        List<ChoiceQstOption> id = (List<ChoiceQstOption>) getOptChildren.invoke(object);
+//        List<ChoiceQstOption> id = (List<ChoiceQstOption>) getOptChildren.invoke(object);
 
-        setOptChildren.invoke(object, id.stream()
-                .peek(choiceQstOption -> {
-                    if (StrUtil.isEmpty(choiceQstOption.getId())) {
-                        choiceQstOption.setId(IdUtil.fastSimpleUUID());
-                    }
-                })
-                .collect(Collectors.toList()));
-    }
+//        setOptChildren.invoke(object, id.stream()
+//                .peek(choiceQstOption -> {
+//                    if (StrUtil.isEmpty(choiceQstOption.getId())) {
+//                        choiceQstOption.setId(IdUtil.fastSimpleUUID());
+//                    }
+//                })
+//                .collect(Collectors.toList()));
+//    }
 
     /**
      * 反射设置id

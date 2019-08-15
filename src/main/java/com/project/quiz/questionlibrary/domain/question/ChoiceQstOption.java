@@ -20,9 +20,9 @@ public class ChoiceQstOption {
     /**
      * 选择项id 新增时后台自动生成
      */
-    @JsonView(BigQuestionView.Summary.class)
-    @ApiModelProperty(value = "选择项id 新增时后台自动生成", name = "id", example = "632a005143cd4969ae07f5db0212773c")
-    private String id;
+//    @JsonView(BigQuestionView.Summary.class)
+//    @ApiModelProperty(value = "选择项id 新增时后台自动生成", name = "id", example = "632a005143cd4969ae07f5db0212773c")
+//    private String id;
 
     /**
      * 选择项题干

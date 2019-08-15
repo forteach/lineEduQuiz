@@ -1,12 +1,10 @@
 package com.project.quiz.practiser.web.resp;
 
-import com.project.quiz.interaction.web.vo.DataDatumVo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * @author: zhangyy
@@ -30,26 +28,6 @@ public class AskAnswerExerciseResp implements Serializable {
      * 学生答案
      */
     @ApiModelProperty(value = "回答内容", name = "answer")
-    private String answer;
+    private String stuAnswer;
 
-    /**
-     * 答案附件
-     */
-    @ApiModelProperty(value = "附件列表", name = "fileList")
-    private List<DataDatumVo> fileList;
-
-    /**
-     * 答案图片列表
-     */
-    private List<String> answerImageList;
-
-    public AskAnswerExerciseResp() {
-    }
-
-    public AskAnswerExerciseResp(String questionId, String answer, List<DataDatumVo> fileList, List<String> answerImageList) {
-        this.questionId = questionId;
-        this.answer = answer;
-        this.fileList = fileList;
-        this.answerImageList = answerImageList;
-    }
 }

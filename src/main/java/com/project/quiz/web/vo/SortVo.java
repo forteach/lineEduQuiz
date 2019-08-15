@@ -46,8 +46,8 @@ public class SortVo {
      * 依照数据库哪条字段排序 驼峰
      */
     @NotNull(message = "排序规则不能为空")
-    @ApiModelProperty(value = "排序规则", notes = "依照数据库哪条字段排序 驼峰", dataType = "string", name = "sorting", example = "uTime", required = true)
-    private String sorting;
+    @ApiModelProperty(value = "排序规则", notes = "依照数据库哪条字段排序 驼峰", dataType = "string", name = "sorting", example = "uDate", required = true)
+    private String sorting = "uDate";
 
     /**
      * 排序方式

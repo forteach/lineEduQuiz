@@ -1,7 +1,6 @@
 package com.project.quiz.practiser.domain;
 
 
-import com.project.quiz.interaction.web.vo.DataDatumVo;
 import com.project.quiz.practiser.domain.base.AbstractAnswer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -36,19 +35,11 @@ public class AskAnswerExercise extends AbstractAnswer {
     @Indexed
     private String questionId;
 
-
-
     /**
      * 学生答案
      */
     @ApiModelProperty(value = "回答内容", name = "answer")
     private String answer;
-
-    /**
-     * 答案附件
-     */
-    @ApiModelProperty(value = "附件列表", name = "fileList")
-    private List<DataDatumVo> fileList;
 
     @ApiModelProperty(name = "right", value = "回答正确与错误", dataType = "string")
     private String right;

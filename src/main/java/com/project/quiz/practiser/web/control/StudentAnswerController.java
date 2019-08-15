@@ -1,7 +1,6 @@
 package com.project.quiz.practiser.web.control;
 
-import com.project.quiz.practiser.service.ExerciseAnswerService;
-import com.project.quiz.practiser.service.ExerciseBookSnapshotService;
+import com.project.quiz.practiser.service.StudentAnswerService;
 import com.project.quiz.practiser.web.req.verify.AnswerVerify;
 import com.project.quiz.service.TokenService;
 import io.swagger.annotations.Api;
@@ -26,17 +25,14 @@ public class StudentAnswerController {
 
     private final TokenService tokenService;
     private final AnswerVerify answerVerify;
-    private final ExerciseAnswerService exerciseAnswerService;
-    private final ExerciseBookSnapshotService exerciseBookSnapshotService;
+    private final StudentAnswerService studentAnswerService;
 
     @Autowired
-    public StudentAnswerController(ExerciseAnswerService exerciseAnswerService,
-                                   ExerciseBookSnapshotService exerciseBookSnapshotService,
+    public StudentAnswerController(StudentAnswerService studentAnswerService,
                                    TokenService tokenService, AnswerVerify answerVerify) {
         this.tokenService = tokenService;
         this.answerVerify = answerVerify;
-        this.exerciseAnswerService = exerciseAnswerService;
-        this.exerciseBookSnapshotService = exerciseBookSnapshotService;
+        this.studentAnswerService = studentAnswerService;
     }
 
 //    @ApiOperation(value = "学生回答作业", notes = "学生端学生提交答案")

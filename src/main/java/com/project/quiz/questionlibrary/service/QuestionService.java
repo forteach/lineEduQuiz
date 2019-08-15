@@ -2,8 +2,11 @@ package com.project.quiz.questionlibrary.service;
 
 
 import com.mongodb.client.result.UpdateResult;
+import com.project.quiz.questionlibrary.domain.BigQuestion;
 import com.project.quiz.questionlibrary.domain.base.AbstractExam;
+import com.project.quiz.questionlibrary.web.req.FindQuestionsReq;
 import com.project.quiz.questionlibrary.web.req.QuestionBankReq;
+import org.springframework.data.domain.Page;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -15,7 +18,7 @@ import java.util.List;
  * @version: V1.0
  * @date: 2019/1/10  11:52
  */
-public interface QuestionService<T> {
+public interface QuestionService<T extends AbstractExam> {
 
     /**
      * 修改新增判断题
@@ -41,7 +44,7 @@ public interface QuestionService<T> {
      * @param id
      * @return
      */
-    Mono<Void> delQuestion(final String id);
+    Mono<Boolean> delQuestion(final String id);
 
     /**
      * 查询详细或全部字段的问题
@@ -84,5 +87,7 @@ public interface QuestionService<T> {
      */
     Flux<T> findBigQuestionInId(final List<String> ids);
 
-    Mono<Boolean> editBigQuestion(T bigQuestion);
+    Mono<Boolean> editBigQuestion(final BigQuestion bigQuestion);
+
+    Mono<Page<BigQuestion>> findPageAll(final FindQuestionsReq req);
 }

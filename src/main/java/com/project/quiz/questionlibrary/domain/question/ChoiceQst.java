@@ -22,17 +22,5 @@ import java.util.List;
 @ApiModel(value = "选择题", description = "选择题的子项 多选及单选")
 public class ChoiceQst extends AbstractExam {
 
-    /**
-     * 单选与多选区分 single  multiple
-     */
-    @JsonView(BigQuestionView.Summary.class)
-    @ApiModelProperty(value = "单选与多选区分 single  multiple", name = "choiceType", required = true, example = "single")
-    private String choiceType;
 
-    /**
-     * 选项集
-     */
-    @JsonView(BigQuestionView.Summary.class)
-    @ApiModelProperty(value = "选项集", name = "optChildren", required = true)
-    private List<ChoiceQstOption> optChildren;
 }

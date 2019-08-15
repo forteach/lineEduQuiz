@@ -2,11 +2,15 @@ package com.project.quiz.questionlibrary.domain.base;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.project.quiz.domain.BaseEntity;
+import com.project.quiz.questionlibrary.domain.question.ChoiceQstOption;
 import com.project.quiz.web.vo.BigQuestionView;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.data.mongodb.core.index.Indexed;
+
+import java.util.List;
 
 /**
  * @Description:
@@ -19,11 +23,13 @@ import lombok.EqualsAndHashCode;
 public abstract class AbstractExam extends BaseEntity {
 
     /**
-     * 题目id
+     * 课程id
      */
+    @Indexed
     @ApiModelProperty(value = "章节id", name = "chapterId", required = true, dataType = "string", example = "463bcd8e5fed4a33883850c14f877271")
     protected String chapterId;
 
+    @Indexed
     @ApiModelProperty(name = "courseId", value = "课程id", required = true, dataType = "string")
     private String courseId;
 
@@ -43,9 +49,9 @@ public abstract class AbstractExam extends BaseEntity {
     protected String teacherId;
 
     /**
-     * 考题类型   single  multiple trueOrFalse  design  bigQuestion
+     * 考题类型   single  multiple trueOrFalse
      */
-    @ApiModelProperty(value = "考题类型  single  multiple trueOrFalse  design  bigQuestion", name = "examType", required = true, example = "single")
+    @ApiModelProperty(value = "考题类型  single  multiple trueOrFalse", name = "examType", required = true, example = "single")
     protected String examType;
 
     /**
@@ -70,4 +76,18 @@ public abstract class AbstractExam extends BaseEntity {
      */
     @ApiModelProperty(value = "难易度id", name = "levelId", example = "0")
     private String levelId;
+
+    /**
+     * 单选与多选区分 single  multiple
+     */
+    @JsonView(BigQuestionView.Summary.class)
+    @ApiModelProperty(value = "单选与多选区分 single  multiple", name = "choiceType", required = true, example = "single")
+    private String choiceType;
+
+    /**
+     * 选项集
+     */
+    @JsonView(BigQuestionView.Summary.class)
+    @ApiModelProperty(value = "选项集", name = "optChildren", required = true)
+    private List<ChoiceQstOption> optChildren;
 }

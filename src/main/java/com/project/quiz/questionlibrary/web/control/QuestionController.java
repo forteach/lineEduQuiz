@@ -1,6 +1,5 @@
 package com.project.quiz.questionlibrary.web.control;
 
-import com.project.quiz.questionlibrary.domain.QuestionList;
 import com.project.quiz.questionlibrary.domain.base.AbstractExam;
 import com.project.quiz.questionlibrary.service.QuestionService;
 import com.project.quiz.questionlibrary.web.control.base.BaseAllController;
