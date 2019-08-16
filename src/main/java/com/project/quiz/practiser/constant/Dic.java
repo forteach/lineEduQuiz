@@ -41,4 +41,6 @@ public class Dic {
      * 班级学生信息前缀
      */
     public static final String CLASS_ROOM = "classRoom#";
+
+    public static final String STUDENT_QUESTIONS = "studentQuestions#";
 }

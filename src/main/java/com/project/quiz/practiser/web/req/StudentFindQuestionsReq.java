@@ -15,8 +15,7 @@ import java.io.Serializable;
  * @description:
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class StudentFindQuestionsReq extends SortVo implements Serializable {
+public class StudentFindQuestionsReq implements Serializable {
 
     @ApiModelProperty(name = "courseId", value = "课程id", dataType = "string", required = true)
     private String courseId;
@@ -26,4 +25,7 @@ public class StudentFindQuestionsReq extends SortVo implements Serializable {
 
     @ApiModelProperty(name = "number", value = "随机题目数量", dataType = "int", required = true)
     private Integer number;
+
+    @ApiModelProperty(hidden = true)
+    private String studentId;
 }

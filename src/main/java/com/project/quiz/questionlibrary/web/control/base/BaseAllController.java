@@ -71,7 +71,7 @@ public abstract class BaseAllController<T extends AbstractExam> {
             @ApiImplicitParam(value = "章节id", name = "chapterId", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "courseId", value = "课程id", dataType = "string", paramType = "query"),
             @ApiImplicitParam(value = "创作老师id", name = "teacherId", dataType = "string", paramType = "query"),
-            @ApiImplicitParam(value = "考题类型  single  multiple trueOrFalse  design  bigQuestion", name = "examType", example = "single", dataType = "query"),
+            @ApiImplicitParam(value = "考题类型  single  multiple trueOrFalse", name = "examType", example = "single", dataType = "query"),
             @ApiImplicitParam(value = "分页", dataType = "int", name = "page", example = "0", required = true),
             @ApiImplicitParam(value = "每页数量", dataType = "int", name = "size", example = "20", required = true)
     })

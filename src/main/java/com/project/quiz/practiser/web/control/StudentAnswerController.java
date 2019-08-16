@@ -1,14 +1,23 @@
 package com.project.quiz.practiser.web.control;
 
+import com.project.quiz.common.WebResult;
 import com.project.quiz.practiser.service.StudentAnswerService;
+import com.project.quiz.practiser.web.req.StudentFindQuestionsReq;
 import com.project.quiz.practiser.web.req.verify.AnswerVerify;
 import com.project.quiz.service.TokenService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 /**
  * @author: zhangyy
@@ -85,16 +94,16 @@ public class StudentAnswerController {
      * @param request
      * @return
      */
-//    @ApiOperation(value = "学生端查询习题", notes = "学生查询习题集,学生答题后是快照,没有答题返回最新的答题的题库")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(value = "章节id", name = "chapterId", example = "章节id", dataType = "string", paramType = "query"),
-//            @ApiImplicitParam(value = "课程id", name = "courseId", example = "章节id", dataType = "string", paramType = "query"),
-//            @ApiImplicitParam(value = "题集类型", name = "exeBookType", example = "1、提问册 2、练习册3、作业册", paramType = "query"),
-//            @ApiImplicitParam(value = "课堂练习  before/预习 now/课堂 before,now/全部", name = "preview", dataType = "string", paramType = "query")
-//    })
-//    @PostMapping("/findExerciseBook")
-//    public Mono<WebResult> findExerciseBook(@RequestBody findExerciseBookReq req, ServerHttpRequest request) {
+    @ApiOperation(value = "学生端查询习题", notes = "学生查询习题集,学生答题后是快照,没有答题返回最新的答题的题库")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "章节id", name = "chapterId", example = "章节id", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(value = "课程id", name = "courseId", example = "章节id", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "number", value = "随机题目数量", dataType = "int", required = true, paramType = "query"),
+    })
+    @PostMapping("/findQuestions")
+    public Mono<WebResult> findExerciseBook(@RequestBody StudentFindQuestionsReq req, ServerHttpRequest request) {
 //        req.setStudentId(tokenService.getStudentId(request));
-//        return exerciseBookSnapshotService.findExerciseBook(req).map(WebResult::okResult);
-//    }
+        req.setStudentId("");
+        return studentAnswerService.findStudentQuestions(req).map(WebResult::okResult);
+    }
 }
