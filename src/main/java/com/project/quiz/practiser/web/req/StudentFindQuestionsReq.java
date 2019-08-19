@@ -1,9 +1,7 @@
 package com.project.quiz.practiser.web.req;
 
-import com.project.quiz.web.vo.SortVo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 

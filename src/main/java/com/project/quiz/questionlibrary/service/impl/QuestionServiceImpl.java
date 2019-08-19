@@ -268,9 +268,7 @@ public class QuestionServiceImpl<T extends AbstractExam> implements QuestionServ
             //新增
             return reactiveMongoTemplate.save(bigQuestion)
                     .doOnError(t -> MyAssert.isNull(null, DefineCode.ERR0012, "保存失败"))
-                    .flatMap(b -> {
-                        return Mono.just(true);
-                    });
+                    .flatMap(b -> Mono.just(true));
         }
     }
 
@@ -280,8 +278,7 @@ public class QuestionServiceImpl<T extends AbstractExam> implements QuestionServ
         req.queryPaging(query);
         Mono<Long> count = reactiveMongoTemplate.count(query, BigQuestion.class);
         Mono<List<BigQuestion>> list = reactiveMongoTemplate.find(query, BigQuestion.class).collectList();
-        return list.zipWith(count)
-                .map(t -> new PageImpl<>(t.getT1(), PageRequest.of(req.getPage(), req.getSize()), t.getT2()));
+        return list.zipWith(count).map(t -> new PageImpl<>(t.getT1(), PageRequest.of(req.getPage(), req.getSize()), t.getT2()));
     }
 
     private Query setWherePageAll(final String courseId, final String chapterId, final String teacherId, final String examType) {

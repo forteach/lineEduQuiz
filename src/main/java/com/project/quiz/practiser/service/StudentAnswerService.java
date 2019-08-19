@@ -3,18 +3,25 @@ package com.project.quiz.practiser.service;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSON;
-import cn.hutool.json.JSONArray;
-import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.mongodb.client.result.UpdateResult;
+import com.project.quiz.common.DefineCode;
+import com.project.quiz.common.MyAssert;
+import com.project.quiz.practiser.domain.BigQuestionAnswer;
+import com.project.quiz.practiser.domain.QuestionsLists;
+import com.project.quiz.practiser.web.req.AnswerReq;
+import com.project.quiz.practiser.web.req.FindAnswerReq;
 import com.project.quiz.practiser.web.req.StudentFindQuestionsReq;
-import com.project.quiz.practiser.web.vo.AnswerVo;
 import com.project.quiz.questionlibrary.domain.BigQuestion;
-import org.bson.types.ObjectId;
+import org.reactivestreams.Publisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.SampleOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -25,7 +32,6 @@ import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 
-import static com.project.quiz.common.Dic.MONGDB_ID;
 import static com.project.quiz.practiser.constant.Dic.STUDENT_QUESTIONS;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
 
@@ -47,8 +53,6 @@ public class StudentAnswerService {
         this.reactiveRedisTemplate = reactiveRedisTemplate;
     }
 
-//    private
-
     public Mono<List<BigQuestion>> findStudentQuestions(final StudentFindQuestionsReq req) {
         final String key = STUDENT_QUESTIONS.concat(req.getStudentId());
         Mono<Boolean> booleanMono = reactiveRedisTemplate.hasKey(key);
@@ -61,29 +65,83 @@ public class StudentAnswerService {
                 if (StrUtil.isNotBlank(req.getCourseId())) {
                     criteria.and("courseId").is(req.getCourseId());
                 }
-                SampleOperation matchStage = Aggregation.sample(req.getNumber());
-                Aggregation aggregation = Aggregation.newAggregation(matchStage, match(criteria));
 
-//        Mono<Long> count = reactiveMongoTemplate.count(Query.query(criteria), BigQuestion.class);
-                return reactiveMongoTemplate.aggregate(aggregation, "bigQuestion", BigQuestion.class)
-                        .collectList()
-                        .filterWhen(list -> setRedisStudentQuestions(list, key))
-                        .flatMapMany(Flux::fromIterable)
-                        .map(bigQuestion -> {
-                            //答案置空
-                            bigQuestion.setAnswer("");
-                            bigQuestion.setAnalysis("");
-                            return bigQuestion;
-                        }).collectList();
+                 return findBigQuestions(criteria, req.getStudentId())
+                         .flatMap(list -> {
+                             if (list.size() == 0){
+                                 return randomBigQuestions(criteria, req, key);
+                             }
+                             return Mono.just(list);
+                         })
+//                return randomBigQuestions(criteria, req, key)
+                         .filterWhen(bigQuestions -> setRedisStudentQuestions(bigQuestions, key))
+                         .flatMapMany(Flux::fromIterable)
+                         .map(this::setAnswerIsNull)
+                         .collectList();
             } else {
-                return reactiveRedisTemplate.opsForValue().get(key)
-                        .flatMap(s -> Mono.just(JSONUtil.toList(JSONUtil.parseArray(s), BigQuestion.class)));
+                return findRedisQuestions(key);
             }
         });
-//        return count.zipWith(output)
-//                .map(t -> new PageImpl<>(t.getT2(), PageRequest.of(req.getPage(), req.getSize()), t.getT1()));
     }
 
+    private Mono<List<BigQuestion>> randomBigQuestions(Criteria criteria, final StudentFindQuestionsReq req, final String key){
+        SampleOperation matchStage = Aggregation.sample(req.getNumber());
+        Aggregation aggregation = Aggregation.newAggregation(matchStage, match(criteria));
+        return reactiveMongoTemplate.aggregate(aggregation, "bigQuestion", BigQuestion.class)
+                .collectList()
+                .filterWhen(list -> setRedisStudentQuestions(list, key))
+                .filterWhen(list -> setQuestions(list, req))
+                .flatMapMany(Flux::fromIterable)
+                .map(this::setAnswerIsNull)
+                .collectList();
+    }
+
+    private Mono<Boolean> setQuestions(final List<BigQuestion> list, final StudentFindQuestionsReq req) {
+        Criteria criteria = buildCriteria(req.getChapterId(), req.getCourseId(), null, null, req.getStudentId());
+        Update update = updateQuery(req.getChapterId(), req.getCourseId(), null, null, req.getStudentId());
+        update.set("bigQuestions", list);
+        return reactiveMongoTemplate.upsert(Query.query(criteria), update, QuestionsLists.class)
+                .map(UpdateResult::wasAcknowledged)
+                .flatMap(r -> MyAssert.isFalse(r, DefineCode.ERR0012, "保存失败"));
+    }
+
+    private BigQuestion setAnswerIsNull(BigQuestion bigQuestion){
+        bigQuestion.setAnalysis("");
+        bigQuestion.setAnswer("");
+        return bigQuestion;
+    }
+
+    Mono<List<BigQuestion>> findBigQuestions(Criteria criteria, final String studentId){
+        if (StrUtil.isNotBlank(studentId)) {
+            criteria.and("studentId").is(studentId);
+        }
+        return reactiveMongoTemplate.findOne(Query.query(criteria), QuestionsLists.class)
+                .map(QuestionsLists::getBigQuestions);
+    }
+
+    /**
+     * 查询题目保存快照信息
+     *
+     * @param key
+     * @return
+     */
+    private Mono<List<BigQuestion>> findRedisQuestions(final String key) {
+        return reactiveRedisTemplate
+                .opsForValue()
+                .get(key)
+                .flatMap(s -> Mono.just(JSONUtil.toList(JSONUtil.parseArray(s), BigQuestion.class)))
+                .flatMapMany(Flux::fromIterable)
+                .map(this::setAnswerIsNull)
+                .collectList();
+    }
+
+    /**
+     * 设置redis保存快照题目信息
+     *
+     * @param bigQuestions
+     * @param key
+     * @return
+     */
     private Mono<Boolean> setRedisStudentQuestions(final List<BigQuestion> bigQuestions, final String key) {
         return reactiveRedisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(bigQuestions), Duration.ofHours(24));
     }
@@ -93,51 +151,93 @@ public class StudentAnswerService {
      *
      * @return
      */
-    Criteria buildExerciseBook(final AnswerVo answerVo) {
+    Criteria buildCriteria(final String chapterId, final String courseId, final String classId, final String questionId, final String studentId) {
 
         Criteria criteria = new Criteria();
-        if (StrUtil.isNotBlank(answerVo.getChapterId())) {
-            criteria.and("chapterId").is(answerVo.getChapterId());
+        if (StrUtil.isNotBlank(chapterId)) {
+            criteria.and("chapterId").is(chapterId);
         }
-        if (StrUtil.isNotBlank(answerVo.getCourseId())) {
-            criteria.and("courseId").is(answerVo.getCourseId());
+        if (StrUtil.isNotBlank(courseId)) {
+            criteria.and("courseId").is(courseId);
         }
-        if (StrUtil.isNotBlank(answerVo.getClassId())) {
-            criteria.and("classId").is(answerVo.getClassId());
+        if (StrUtil.isNotBlank(classId)) {
+            criteria.and("classId").is(classId);
         }
-        if (StrUtil.isNotBlank(answerVo.getStudentId())) {
-            criteria.and("studentId").is(answerVo.getStudentId());
+        if (StrUtil.isNotBlank(studentId)) {
+            criteria.and("studentId").is(studentId);
         }
-        return criteria;
-    }
-
-    Criteria queryCriteria(final AnswerVo answerVo, final String questionId) {
-        //设置查询条件
-        Criteria criteria = buildExerciseBook(answerVo);
-
         if (StrUtil.isNotBlank(questionId)) {
-            criteria.and("bigQuestionExerciseBook.questionChildren.".concat(MONGDB_ID)).is(new ObjectId(questionId));
+            criteria.and("questionId").is(questionId);
         }
         return criteria;
     }
 
-    Update updateQuery(final AnswerVo answerVo) {
+    Update updateQuery(final String chapterId, final String courseId, final String classId, final String questionId, final String studentId) {
         // 修改答题记录
         Update update = Update.update("uDate", DateUtil.formatDateTime(new Date()));
-
-        if (StrUtil.isNotBlank(answerVo.getChapterId())) {
-            update.set("chapterId", answerVo.getChapterId());
+        if (StrUtil.isNotBlank(chapterId)) {
+            update.set("chapterId", chapterId);
         }
-        if (StrUtil.isNotBlank(answerVo.getCourseId())) {
-            update.set("courseId", answerVo.getCourseId());
+        if (StrUtil.isNotBlank(courseId)) {
+            update.set("courseId", courseId);
         }
-
-        if (StrUtil.isNotBlank(answerVo.getClassId())) {
-            update.set("classId", answerVo.getClassId());
+        if (StrUtil.isNotBlank(questionId)) {
+            update.set("questionId", questionId);
         }
-        if (StrUtil.isNotBlank(answerVo.getStudentId())) {
-            update.set("studentId", answerVo.getStudentId());
+        if (StrUtil.isNotBlank(studentId)) {
+            update.set("studentId", studentId);
+        }
+        if (StrUtil.isNotBlank(classId)) {
+            update.set("classId", classId);
+        }
+        if (StrUtil.isNotBlank(studentId)) {
+            update.set("studentId", studentId);
         }
         return update;
+    }
+
+    public Mono<Boolean> saveStudentAnswer(final AnswerReq req) {
+        final String key = STUDENT_QUESTIONS.concat(req.getStudentId());
+        return findRedisQuestions(key)
+                .flatMapMany(Flux::fromIterable)
+                .filter(bigQuestion -> req.getQuestionId().equals(bigQuestion.getId()))
+                .next()
+                .switchIfEmpty(Mono.justOrEmpty(new BigQuestion()))
+                .flatMap(bigQuestion -> {
+                    MyAssert.isNull(bigQuestion.getId(), DefineCode.ERR0010, "不存在相关习题信息");
+                    return checkResult(bigQuestion.getAnswer(), req.getStuAnswer())
+                            .flatMap(b -> {
+                                Criteria criteria = buildCriteria(req.getChapterId(), req.getCourseId(), req.getClassId(), req.getQuestionId(), req.getStudentId());
+                                Update update = updateQuery(req.getChapterId(), req.getCourseId(), req.getClassId(), req.getQuestionId(), req.getStudentId());
+                                update.set("right", b);
+                                update.set("bigQuestion", bigQuestion);
+                                return reactiveMongoTemplate.upsert(Query.query(criteria), update, BigQuestionAnswer.class)
+                                        .map(UpdateResult::wasAcknowledged)
+                                        .flatMap(r -> MyAssert.isFalse(r, DefineCode.ERR0012, "保存失败"));
+                            });
+                });
+    }
+
+    /**
+     * 判断学生答题结果
+     *
+     * @param answer
+     * @param stuAnswer
+     * @return
+     */
+    private Mono<Boolean> checkResult(final String answer, final String stuAnswer) {
+        if (answer.equals(stuAnswer)) {
+            return Mono.just(true);
+        } else {
+            return Mono.just(false);
+        }
+    }
+
+    public Mono<Page<BigQuestionAnswer>> findAnswerStudent(final FindAnswerReq req) {
+        Query query = Query.query(buildCriteria(req.getChapterId(), req.getCourseId(), req.getClassId(), req.getQuestionId(), req.getStudentId()));
+        req.queryPaging(query);
+        Mono<Long> count = reactiveMongoTemplate.count(query, BigQuestionAnswer.class);
+        Mono<List<BigQuestionAnswer>> list = reactiveMongoTemplate.find(query, BigQuestionAnswer.class).collectList();
+        return list.zipWith(count).map(t -> new PageImpl<>(t.getT1(), PageRequest.of(req.getPage(), req.getSize()), t.getT2()));
     }
 }
