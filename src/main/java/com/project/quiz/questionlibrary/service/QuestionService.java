@@ -32,9 +32,9 @@ public interface QuestionService<T extends AbstractExam> {
     /**
      * 题目分享
      *
-//     * @param questionBankId
-//     * @param teacherId
-//     * @return
+     * @param questionBankId
+     * @param teacherId
+     * @return
      */
     Mono<Boolean> questionBankAssociationAdd(final String questionBankId, final String teacherId);
 

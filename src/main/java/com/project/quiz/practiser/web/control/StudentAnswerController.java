@@ -64,8 +64,8 @@ public class StudentAnswerController {
         answerVerify.verify(req);
         MyAssert.isNull(req.getQuestionId(), DefineCode.ERR0010, "题目id不为空");
         MyAssert.isNull(req.getStuAnswer(), DefineCode.ERR0010, "答案不为空");
+        MyAssert.isNull(req.getChapterName(), DefineCode.ERR0010, "章节名称不为空");
         req.setStudentId(tokenService.getStudentId(request));
-//        req.setStudentId("17010001");
         return studentAnswerService.saveStudentAnswer(req).map(WebResult::okResult);
     }
 
@@ -84,7 +84,6 @@ public class StudentAnswerController {
         valideSort(req.getPage(), req.getSize());
         answerVerify.verifyChapterId(req.getCourseId(), req.getChapterId());
         req.setStudentId(tokenService.getStudentId(request));
-//        req.setStudentId("17010001");
         return studentAnswerService.findAnswerStudent(req).map(WebResult::okResult);
     }
 
@@ -105,7 +104,6 @@ public class StudentAnswerController {
         answerVerify.verifyChapterId(req.getCourseId(), req.getChapterId());
         MyAssert.isNull(req.getNumber(), DefineCode.ERR0010, "随机获取题目数量不能为空");
         req.setStudentId(tokenService.getStudentId(request));
-//        req.setStudentId("17010001");
         return studentAnswerService.findStudentQuestions(req).map(WebResult::okResult);
     }
 }

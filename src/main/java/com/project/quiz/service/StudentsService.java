@@ -12,8 +12,6 @@ import java.util.List;
 
 import static com.project.quiz.common.Dic.STUDENT_ADO;
 
-//import static com.project.quiz.common.KeyStorage.STUDENT_ADO;
-
 /**
  * @Description:
  * @author: liu zhenming
@@ -77,6 +75,4 @@ public class StudentsService {
     public Mono<String> findStudentsPortrait(final String id) {
         return reactiveHashOperations.get(STUDENT_ADO.concat(id), "portrait");
     }
-
-
 }

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @description:
  */
 @RestController
-@Api(value = "题目管理", tags = {"教师端题目管理"})
+@Api(value = "题目管理", tags = {"教师端题目管理"}, description = "教师端对练习题添加,修改,删除")
 @RequestMapping(path = "/question", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class QuestionController<T extends AbstractExam> extends BaseAllController<T> {
 
