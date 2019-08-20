@@ -5,6 +5,8 @@ import lombok.Data;
 
 import java.io.Serializable;
 
+import static com.project.quiz.practiser.constant.Dic.STUDENT_QUESTIONS;
+
 /**
  * @author: zhangyy
  * @email: zhang10092009@hotmail.com
@@ -26,4 +28,8 @@ public class StudentFindQuestionsReq implements Serializable {
 
     @ApiModelProperty(hidden = true)
     private String studentId;
+
+    public String getKey(){
+        return STUDENT_QUESTIONS.concat(studentId).concat("#").concat(courseId).concat("#").concat(chapterId);
+    }
 }
