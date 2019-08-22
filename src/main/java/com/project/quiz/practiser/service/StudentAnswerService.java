@@ -67,10 +67,15 @@ public class StudentAnswerService {
         });
     }
 
+    /**
+     * 随机获取学生要回答的题目信息
+     * @param req
+     * @param key
+     * @return
+     */
     private Mono<List<BigQuestion>> randomBigQuestions(final StudentFindQuestionsReq req, final String key) {
         final Criteria criteria = createCriteria(req.getChapterId(), req.getCourseId());
-        SampleOperation matchStage = Aggregation.sample(req.getNumber());
-        Aggregation aggregation = Aggregation.newAggregation(matchStage, match(criteria));
+        Aggregation aggregation = Aggregation.newAggregation(match(criteria), Aggregation.sample(req.getNumber()));
         return reactiveMongoTemplate.aggregate(aggregation, "bigQuestion", BigQuestion.class)
                 .collectList()
                 .filterWhen(list -> setRedisStudentQuestions(list, key))
@@ -80,6 +85,12 @@ public class StudentAnswerService {
                 .collectList();
     }
 
+    /**
+     * 保存学生回答需要回答的习题快照信息
+     * @param list
+     * @param req
+     * @return
+     */
     private Mono<Boolean> setQuestions(final List<BigQuestion> list, final StudentFindQuestionsReq req) {
         Criteria criteria = buildCriteria(req.getChapterId(), req.getCourseId(), null, null, req.getStudentId());
         Update update = updateQuery(req.getChapterId(), req.getCourseId(), null, null, req.getStudentId());
@@ -95,6 +106,12 @@ public class StudentAnswerService {
         return bigQuestion;
     }
 
+    /**
+     * 查询学生需要回答习题信息，如果没有快照，去获取随机题库获取题目集合
+     * @param req
+     * @param key
+     * @return
+     */
     private Mono<List<BigQuestion>> findBigQuestions(final StudentFindQuestionsReq req, final String key) {
         Criteria criteria = createCriteria(req.getChapterId(), req.getCourseId());
         if (StrUtil.isNotBlank(req.getStudentId())) {
@@ -138,6 +155,11 @@ public class StudentAnswerService {
         return reactiveRedisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(bigQuestions), Duration.ofHours(24));
     }
 
+    /**
+     * 保存学生回答的练习和判断学生回答的结果
+     * @param req
+     * @return
+     */
     public Mono<Boolean> saveStudentAnswer(final AnswerReq req) {
         final String key = req.getKey();
         return findRedisQuestions(key)
@@ -175,6 +197,11 @@ public class StudentAnswerService {
         }
     }
 
+    /**
+     * 分页查询学生回答的结果及对应的习题
+     * @param req
+     * @return
+     */
     public Mono<Page<BigQuestionAnswer>> findAnswerStudent(final FindAnswerReq req) {
         Query query = Query.query(buildCriteria(req.getChapterId(), req.getCourseId(), req.getClassId(), req.getQuestionId(), req.getStudentId()));
         req.queryPaging(query);
