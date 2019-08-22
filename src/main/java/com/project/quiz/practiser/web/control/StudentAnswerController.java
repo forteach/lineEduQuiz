@@ -96,12 +96,14 @@ public class StudentAnswerController {
     @ApiOperation(value = "学生端查询习题", notes = "学生查询习题集,学生答题后是快照,没有答题返回最新的答题的题库")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "章节id", name = "chapterId", example = "章节id", dataType = "string", paramType = "query"),
-            @ApiImplicitParam(value = "课程id", name = "courseId", example = "章节id", dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "number", value = "随机题目数量", dataType = "int", required = true, paramType = "query"),
+            @ApiImplicitParam(value = "课程id", name = "courseId", example = "课程id", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(value = "班级id", name = "classId", example = "班级id", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "number", value = "随机题目数量", dataType = "int", required = true, paramType = "query")
     })
     @PostMapping("/findQuestions")
     public Mono<WebResult> findExerciseBook(@RequestBody StudentFindQuestionsReq req, ServerHttpRequest request) {
         answerVerify.verifyChapterId(req.getCourseId(), req.getChapterId());
+        MyAssert.isNull(req.getClassId(), DefineCode.ERR0010, "班级id 不为空");
         MyAssert.isNull(req.getNumber(), DefineCode.ERR0010, "随机获取题目数量不能为空");
         req.setStudentId(tokenService.getStudentId(request));
         return studentAnswerService.findStudentQuestions(req).map(WebResult::okResult);

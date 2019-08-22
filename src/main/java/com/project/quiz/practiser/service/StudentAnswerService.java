@@ -18,7 +18,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.SampleOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -28,9 +27,10 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
+import static com.project.quiz.practiser.constant.Dic.IS_ANSWER_COMPLETED_N;
+import static com.project.quiz.practiser.constant.Dic.IS_ANSWER_COMPLETED_Y;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
 
 /**
@@ -69,6 +69,7 @@ public class StudentAnswerService {
 
     /**
      * 随机获取学生要回答的题目信息
+     *
      * @param req
      * @param key
      * @return
@@ -87,14 +88,16 @@ public class StudentAnswerService {
 
     /**
      * 保存学生回答需要回答的习题快照信息
+     *
      * @param list
      * @param req
      * @return
      */
     private Mono<Boolean> setQuestions(final List<BigQuestion> list, final StudentFindQuestionsReq req) {
-        Criteria criteria = buildCriteria(req.getChapterId(), req.getCourseId(), null, null, req.getStudentId());
-        Update update = updateQuery(req.getChapterId(), req.getCourseId(), null, null, req.getStudentId());
+        Criteria criteria = buildCriteriaQuestionId(req.getChapterId(), req.getCourseId(), req.getClassId(), null, req.getStudentId());
+        Update update = updateQuery(req.getChapterId(), req.getCourseId(), req.getClassId(), null, req.getStudentId());
         update.set("bigQuestions", list);
+        update.set("isAnswerCompleted", IS_ANSWER_COMPLETED_N);
         return reactiveMongoTemplate.upsert(Query.query(criteria), update, QuestionsLists.class)
                 .map(UpdateResult::wasAcknowledged)
                 .flatMap(r -> MyAssert.isFalse(r, DefineCode.ERR0012, "保存失败"));
@@ -108,6 +111,7 @@ public class StudentAnswerService {
 
     /**
      * 查询学生需要回答习题信息，如果没有快照，去获取随机题库获取题目集合
+     *
      * @param req
      * @param key
      * @return
@@ -157,6 +161,7 @@ public class StudentAnswerService {
 
     /**
      * 保存学生回答的练习和判断学生回答的结果
+     *
      * @param req
      * @return
      */
@@ -171,14 +176,40 @@ public class StudentAnswerService {
                     MyAssert.isNull(bigQuestion.getId(), DefineCode.ERR0010, "不存在相关习题信息");
                     return checkResult(bigQuestion.getAnswer(), req.getStuAnswer())
                             .flatMap(b -> {
-                                Criteria criteria = buildCriteria(req.getChapterId(), req.getCourseId(), req.getClassId(), req.getQuestionId(), req.getStudentId());
+                                Criteria criteria = buildCriteriaQuestionId(req.getChapterId(), req.getCourseId(), req.getClassId(), req.getQuestionId(), req.getStudentId());
                                 Update update = updateQuery(req.getChapterId(), req.getCourseId(), req.getClassId(), req.getQuestionId(), req.getStudentId());
                                 update.set("right", b);
                                 update.set("bigQuestion", bigQuestion);
                                 return reactiveMongoTemplate.upsert(Query.query(criteria), update, BigQuestionAnswer.class)
                                         .map(UpdateResult::wasAcknowledged)
-                                        .flatMap(r -> MyAssert.isFalse(r, DefineCode.ERR0012, "保存失败"));
+                                        .flatMap(r -> MyAssert.isFalse(r, DefineCode.ERR0012, "保存失败"))
+                                        .filterWhen(r -> addQuestionsAnswer(req));
                             });
+                });
+    }
+
+    private Mono<Boolean> addQuestionsAnswer(final AnswerReq req) {
+        Criteria criteria = buildCriteria(req.getChapterId(), req.getCourseId(), req.getClassId(), req.getStudentId());
+        Update update = Update.update("uDate", DateUtil.now());
+        update.addToSet("questionIds", req.getQuestionId());
+        Mono<QuestionsLists> questionsListsMono = reactiveMongoTemplate.findOne(Query.query(criteria), QuestionsLists.class);
+        Mono<Long> setMono = questionsListsMono.filter(Objects::nonNull)
+                .flatMap(questionsLists -> {
+                    if (questionsLists.getQuestionIds() == null) {
+                        return Mono.just(1L);
+                    } else {
+                        Set<String> set = new HashSet<>(questionsLists.getQuestionIds());
+                        set.add(req.getQuestionId());
+                        return Mono.just((long) set.size());
+                    }
+                });
+        Mono<Long> longMono = questionsListsMono.map(QuestionsLists::getBigQuestions).flatMapMany(Flux::fromIterable).map(BigQuestion::getId).count();
+        return setMono.zipWith(longMono)
+                .flatMap(t -> {
+                    if (t.getT1().longValue() == t.getT2().longValue()) {
+                        update.set("isAnswerCompleted", IS_ANSWER_COMPLETED_Y);
+                    }
+                    return reactiveMongoTemplate.upsert(Query.query(criteria), update, QuestionsLists.class).map(UpdateResult::wasAcknowledged);
                 });
     }
 
@@ -199,11 +230,12 @@ public class StudentAnswerService {
 
     /**
      * 分页查询学生回答的结果及对应的习题
+     *
      * @param req
      * @return
      */
     public Mono<Page<BigQuestionAnswer>> findAnswerStudent(final FindAnswerReq req) {
-        Query query = Query.query(buildCriteria(req.getChapterId(), req.getCourseId(), req.getClassId(), req.getQuestionId(), req.getStudentId()));
+        Query query = Query.query(buildCriteriaQuestionId(req.getChapterId(), req.getCourseId(), req.getClassId(), req.getQuestionId(), req.getStudentId()));
         req.queryPaging(query);
         Mono<Long> count = reactiveMongoTemplate.count(query, BigQuestionAnswer.class);
         Mono<List<BigQuestionAnswer>> list = reactiveMongoTemplate.find(query, BigQuestionAnswer.class).collectList();
@@ -226,16 +258,21 @@ public class StudentAnswerService {
      *
      * @return
      */
-    private Criteria buildCriteria(final String chapterId, final String courseId, final String classId, final String questionId, final String studentId) {
+    private Criteria buildCriteriaQuestionId(final String chapterId, final String courseId, final String classId, final String questionId, final String studentId) {
+        Criteria criteria = buildCriteria(chapterId, courseId, classId, studentId);
+        if (StrUtil.isNotBlank(questionId)) {
+            criteria.and("questionId").is(questionId);
+        }
+        return criteria;
+    }
+
+    private Criteria buildCriteria(final String chapterId, final String courseId, final String classId, final String studentId) {
         Criteria criteria = createCriteria(chapterId, courseId);
         if (StrUtil.isNotBlank(classId)) {
             criteria.and("classId").is(classId);
         }
         if (StrUtil.isNotBlank(studentId)) {
             criteria.and("studentId").is(studentId);
-        }
-        if (StrUtil.isNotBlank(questionId)) {
-            criteria.and("questionId").is(questionId);
         }
         return criteria;
     }
