@@ -49,6 +49,7 @@ public abstract class BaseAllController<T extends AbstractExam> {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "id", name = "id", example = "传入id为修改  不传id为新增", dataType = "string", paramType = "form"),
             @ApiImplicitParam(value = "章节id", name = "chapterId", dataType = "string", paramType = "form"),
+            @ApiImplicitParam(value = "章节名称", name = "chapterName", dataType = "string", paramType = "form"),
             @ApiImplicitParam(value = "课程id", name = "courseId", dataType = "string", paramType = "form"),
             @ApiImplicitParam(value = "题目分数", name = "score", dataType = "number", example = "2.0", paramType = "form"),
             @ApiImplicitParam(value = "创作老师id", name = "teacherId", example = "463bcd8e5fed4a33883850c14f877271", paramType = "form"),

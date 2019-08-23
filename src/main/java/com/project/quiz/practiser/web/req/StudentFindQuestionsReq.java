@@ -23,6 +23,9 @@ public class StudentFindQuestionsReq implements Serializable {
     @ApiModelProperty(name = "chapterId", value = "章节id", dataType = "string", required = true)
     private String chapterId;
 
+    @ApiModelProperty(name = "chapterName", value = "章节名称", dataType = "string", required = true)
+    private String chapterName;
+
     @ApiModelProperty(name = "number", value = "随机题目数量", dataType = "int", required = true)
     private Integer number;
 

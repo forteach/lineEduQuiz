@@ -33,8 +33,8 @@ public abstract class AbstractExam extends BaseEntity {
     @ApiModelProperty(name = "courseId", value = "课程id", required = true, dataType = "string")
     private String courseId;
 
-    @ApiModelProperty(name = "courseName", value = "章节名称", required = true, dataType = "string")
-    private String courseName;
+    @ApiModelProperty(name = "chapterName", value = "章节名称", required = true, dataType = "string")
+    private String chapterName;
 
     /**
      * 题目分数

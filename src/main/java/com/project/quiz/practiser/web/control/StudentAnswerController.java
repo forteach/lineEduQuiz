@@ -87,6 +87,22 @@ public class StudentAnswerController {
         return studentAnswerService.findAnswerStudent(req).map(WebResult::okResult);
     }
 
+    @ApiOperation(value = "学生端分页查询回答情况")
+    @PostMapping(path = "/findStudentAnswerPageAll")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "courseId", value = "课程id", dataType = "string", required = true, paramType = "query"),
+            @ApiImplicitParam(name = "chapterId", value = "章节id", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "studentId", value = "学生id", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "classId", value = "班级id", required = true, paramType = "query"),
+            @ApiImplicitParam(value = "分页", dataType = "int", name = "page", example = "0", required = true, paramType = "query"),
+            @ApiImplicitParam(value = "每页数量", dataType = "int", name = "size", example = "20", required = true, paramType = "query")
+    })
+    public Mono<WebResult> findStudentAnswerPageAll(@RequestBody FindAnswerReq req){
+        valideSort(req.getPage(), req.getSize());
+        MyAssert.isNull(req.getCourseId(), DefineCode.ERR0010, "课程不能为空");
+        return studentAnswerService.findStudentAnswerStudent(req).map(WebResult::okResult);
+    }
+
     /**
      * 学生端查询习题集,如果学生没有答题查询最新的题集,答过返回题库的快照
      * @param req
@@ -95,9 +111,10 @@ public class StudentAnswerController {
      */
     @ApiOperation(value = "学生端查询习题", notes = "学生查询习题集,学生答题后是快照,没有答题返回最新的答题的题库")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "章节id", name = "chapterId", example = "章节id", dataType = "string", paramType = "query"),
-            @ApiImplicitParam(value = "课程id", name = "courseId", example = "课程id", dataType = "string", paramType = "query"),
-            @ApiImplicitParam(value = "班级id", name = "classId", example = "班级id", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(value = "章节id", name = "chapterId", example = "章节id", dataType = "string", required = true, paramType = "query"),
+            @ApiImplicitParam(value = "章节名称", name = "chapterName", example = "章节名称", dataType = "string", required = true, paramType = "query"),
+            @ApiImplicitParam(value = "课程id", name = "courseId", example = "课程id", dataType = "string", required = true, paramType = "query"),
+            @ApiImplicitParam(value = "班级id", name = "classId", example = "班级id", dataType = "string", required = true, paramType = "query"),
             @ApiImplicitParam(name = "number", value = "随机题目数量", dataType = "int", required = true, paramType = "query")
     })
     @PostMapping("/findQuestions")
