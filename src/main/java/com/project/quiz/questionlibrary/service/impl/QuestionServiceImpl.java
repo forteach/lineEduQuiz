@@ -324,8 +324,8 @@ public class QuestionServiceImpl<T extends AbstractExam> implements QuestionServ
         if (StrUtil.isNotBlank(bigQuestion.getLevelId())) {
             update.set("levelId", bigQuestion.getLevelId());
         }
-        if (StrUtil.isNotBlank(bigQuestion.getCourseName())) {
-            update.set("courseName", bigQuestion.getCourseName());
+        if (StrUtil.isNotBlank(bigQuestion.getChapterName())) {
+            update.set("chapterName", bigQuestion.getChapterName());
         }
         if (StrUtil.isNotBlank(String.valueOf(bigQuestion.getScore()))) {
             update.set("score", bigQuestion.getScore());

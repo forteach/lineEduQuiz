@@ -33,6 +33,9 @@ public class BigQuestionAnswer extends AbstractAnswer {
     @ApiModelProperty(name = "right", value = "回答结果正确与否", dataType = "string")
     private String right;
 
+    @ApiModelProperty(name = "stuAnswer", value = "学生回答内容", dataType = "string")
+    private String stuAnswer;
+
     @ApiModelProperty(name = "bigQuestion", value = "题目信息详情")
     private BigQuestion bigQuestion;
 }
