@@ -70,7 +70,7 @@ public class StudentAnswerController {
     }
 
 
-    @ApiOperation(value = "学生端分页查询自己回答")
+    @ApiOperation(value = "学生端分页查询自己回答结果与解析")
     @PostMapping(path = "/findAnswerPageAll")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "courseId", value = "课程id", dataType = "string", required = true, paramType = "form"),
