@@ -57,7 +57,7 @@ public abstract class BaseAllController<T extends AbstractExam> {
             @ApiImplicitParam(value = "题目答案", name = "answer", example = "A", paramType = "form"),
             @ApiImplicitParam(value = "题目解析", name = "analysis", example = "A选项正确", paramType = "form"),
             @ApiImplicitParam(value = "难易度id", name = "levelId", example = "0", paramType = "form"),
-            @ApiImplicitParam(value = "单选与多选区分 single  multiple", name = "choiceType, 只有是选择题才传值", dataType = "string", example = "single", paramType = "form"),
+//            @ApiImplicitParam(value = "单选与多选区分 single  multiple", name = "choiceType, 只有是选择题才传值", dataType = "string", example = "single", paramType = "form"),
             @ApiImplicitParam(value = "选项集", name = "optChildren", example = "single 只有是选择题才传值", dataTypeClass = List.class, paramType = "form")
     })
     @PostMapping(path = "/editSaveQuestion")

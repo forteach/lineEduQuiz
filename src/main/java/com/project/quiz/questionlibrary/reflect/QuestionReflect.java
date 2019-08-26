@@ -91,9 +91,9 @@ public class QuestionReflect {
         } else if (ChoiceQst.class.isAssignableFrom(clazz)) {
 
             //设置选择题参数 及 选择题子项参数
-            Method getChoiceType = getChoiceTypeMethod(clazz);
-            String choiceType = (String) getChoiceType.invoke(object);
-            setExamType.invoke(object, choiceType);
+//            Method getChoiceType = getChoiceTypeMethod(clazz);
+//            String choiceType = (String) getChoiceType.invoke(object);
+//            setExamType.invoke(object, choiceType);
 //            setupOptChildrenId(object, clazz);
 
         } else {
@@ -164,9 +164,9 @@ public class QuestionReflect {
      * @return
      * @throws NoSuchMethodException
      */
-    private Method getChoiceTypeMethod(Class clazz) throws NoSuchMethodException {
-        return clazz.getDeclaredMethod("getChoiceType");
-    }
+//    private Method getChoiceTypeMethod(Class clazz) throws NoSuchMethodException {
+//        return clazz.getDeclaredMethod("getChoiceType");
+//    }
 
     /**
      * 反射获取选择题选项
@@ -175,9 +175,9 @@ public class QuestionReflect {
      * @return
      * @throws NoSuchMethodException
      */
-    private Method getOptChildrenMethod(Class clazz) throws NoSuchMethodException {
-        return clazz.getDeclaredMethod("getOptChildren");
-    }
+//    private Method getOptChildrenMethod(Class clazz) throws NoSuchMethodException {
+//        return clazz.getDeclaredMethod("getOptChildren");
+//    }
 
     /**
      * 反射设置选择题选项
@@ -186,8 +186,8 @@ public class QuestionReflect {
      * @return
      * @throws NoSuchMethodException
      */
-    private Method setOptChildrenMethod(Class clazz) throws NoSuchMethodException {
-        return clazz.getDeclaredMethod("setOptChildren", List.class);
-    }
+//    private Method setOptChildrenMethod(Class clazz) throws NoSuchMethodException {
+//        return clazz.getDeclaredMethod("setOptChildren", List.class);
+//    }
 
 }

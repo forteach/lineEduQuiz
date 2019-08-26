@@ -80,9 +80,9 @@ public abstract class AbstractExam extends BaseEntity {
     /**
      * 单选与多选区分 single  multiple
      */
-    @JsonView(BigQuestionView.Summary.class)
-    @ApiModelProperty(value = "单选与多选区分 single  multiple", name = "choiceType", required = true, example = "single")
-    private String choiceType;
+//    @JsonView(BigQuestionView.Summary.class)
+//    @ApiModelProperty(value = "单选与多选区分 single  multiple", name = "choiceType", required = true, example = "single")
+//    private String choiceType;
 
     /**
      * 选项集
