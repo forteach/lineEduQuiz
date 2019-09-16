@@ -74,7 +74,7 @@ public class StudentAnswerService {
      * @return
      */
     private Mono<List<BigQuestion>> randomBigQuestions(final StudentFindQuestionsReq req) {
-        return reactiveMongoTemplate.aggregate(Aggregation.newAggregation(match(createCriteria(req.getChapterId(), req.getCourseId())),
+        return reactiveMongoTemplate.aggregate(Aggregation.newAggregation(match(createCriteria(req.getChapterId(), "")),
                 Aggregation.sample(req.getNumber())), "bigQuestion", BigQuestion.class).collectList();
     }
 
@@ -86,8 +86,8 @@ public class StudentAnswerService {
      * @return
      */
     private Mono<Boolean> setQuestions(final List<BigQuestion> list, final StudentFindQuestionsReq req) {
-        Criteria criteria = buildCriteriaQuestionId(req.getChapterId(), req.getCourseId(), req.getClassId(), null, req.getStudentId());
-        Update update = updateQuery(req.getChapterId(), req.getChapterName(), req.getCourseId(), req.getClassId(), null, req.getStudentId());
+        Criteria criteria = buildCriteriaQuestionId(req.getChapterId(), "", "", null, req.getStudentId());
+        Update update = updateQuery(req.getChapterId(), "", "", "", null, req.getStudentId());
         update.set("bigQuestions", list);
         update.set("isAnswerCompleted", IS_ANSWER_COMPLETED_N);
         return reactiveMongoTemplate.upsert(Query.query(criteria), update, QuestionsLists.class)
@@ -108,7 +108,7 @@ public class StudentAnswerService {
      * @return
      */
     private Mono<List<BigQuestion>> findBigQuestions(final StudentFindQuestionsReq req) {
-        Criteria criteria = createCriteria(req.getChapterId(), req.getCourseId());
+        Criteria criteria = createCriteria(req.getChapterId(), "");
         if (StrUtil.isNotBlank(req.getStudentId())) {
             criteria.and("studentId").is(req.getStudentId());
         }

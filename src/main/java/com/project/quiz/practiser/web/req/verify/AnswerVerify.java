@@ -24,4 +24,7 @@ public class AnswerVerify {
         MyAssert.isNull(courseId, DefineCode.ERR0010, "课程不为空");
         MyAssert.isNull(chapterId, DefineCode.ERR0010, "章节不为空");
     }
+    public void verifyChapterId(final String chapterId){
+        MyAssert.isNull(chapterId, DefineCode.ERR0010, "章节不为空");
+    }
 }
