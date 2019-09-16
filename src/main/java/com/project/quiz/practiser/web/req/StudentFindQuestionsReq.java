@@ -38,8 +38,6 @@ public class StudentFindQuestionsReq implements Serializable {
 
     public String getKey(){
 //        return STUDENT_QUESTIONS.concat(studentId).concat("#").concat(courseId).concat("#").concat(chapterId);
-//        return STUDENT_QUESTIONS.concat(studentId).concat("#").concat(courseId).concat("#").concat(chapterId);
-//        return STUDENT_QUESTIONS.concat(studentId).concat("#").concat(courseId).concat("#").concat(chapterId);
         return STUDENT_QUESTIONS.concat(studentId).concat("#").concat(chapterId);
     }
 }

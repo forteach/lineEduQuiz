@@ -120,7 +120,10 @@ public class StudentAnswerController {
     @PostMapping("/findQuestions")
     public Mono<WebResult> findExerciseBook(@RequestBody StudentFindQuestionsReq req, ServerHttpRequest request) {
         answerVerify.verifyChapterId(req.getChapterId());
-        MyAssert.isNull(req.getNumber(), DefineCode.ERR0010, "随机获取题目数量不能为空");
+//        MyAssert.isNull(req.getNumber(), DefineCode.ERR0010, "随机获取题目数量不能为空");
+        if (req.getNumber() == null){
+            req.setNumber(5);
+        }
         req.setStudentId(tokenService.getStudentId(request));
         return studentAnswerService.findStudentQuestions(req).map(WebResult::okResult);
     }
