@@ -27,7 +27,10 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 import static com.project.quiz.practiser.constant.Dic.IS_ANSWER_COMPLETED_N;
 import static com.project.quiz.practiser.constant.Dic.IS_ANSWER_COMPLETED_Y;
@@ -74,6 +77,7 @@ public class StudentAnswerService {
      * @return
      */
     private Mono<List<BigQuestion>> randomBigQuestions(final StudentFindQuestionsReq req) {
+        //使用mongoDB 随机题目
         return reactiveMongoTemplate.aggregate(Aggregation.newAggregation(match(createCriteria(req.getChapterId(), "")),
                 Aggregation.sample(req.getNumber())), "bigQuestion", BigQuestion.class).collectList();
     }
@@ -86,8 +90,8 @@ public class StudentAnswerService {
      * @return
      */
     private Mono<Boolean> setQuestions(final List<BigQuestion> list, final StudentFindQuestionsReq req) {
-        Criteria criteria = buildCriteriaQuestionId(req.getChapterId(), "", "", null, req.getStudentId());
-        Update update = updateQuery(req.getChapterId(), "", "", "", null, req.getStudentId());
+        Criteria criteria = buildCriteriaQuestionId(req.getChapterId(), "", req.getClassId(), "", req.getStudentId());
+        Update update = updateQuery(req.getChapterId(), "", "", req.getClassId(), "", req.getStudentId());
         update.set("bigQuestions", list);
         update.set("isAnswerCompleted", IS_ANSWER_COMPLETED_N);
         return reactiveMongoTemplate.upsert(Query.query(criteria), update, QuestionsLists.class)
@@ -115,7 +119,7 @@ public class StudentAnswerService {
         return reactiveMongoTemplate.findOne(Query.query(criteria), QuestionsLists.class)
                 .switchIfEmpty(Mono.justOrEmpty(new QuestionsLists()))
                 .flatMap(questionsLists -> {
-                    if (questionsLists.getBigQuestions() != null && questionsLists.getBigQuestions().size() > 0) {
+                    if ((questionsLists.getBigQuestions() != null) && !questionsLists.getBigQuestions().isEmpty()) {
                         return Mono.just(questionsLists.getBigQuestions());
                     } else {
                         return randomBigQuestions(req).filterWhen(list -> setQuestions(list, req));
@@ -169,16 +173,18 @@ public class StudentAnswerService {
                                 return reactiveMongoTemplate.upsert(Query.query(criteria), update, BigQuestionAnswer.class)
                                         .map(UpdateResult::wasAcknowledged)
                                         .flatMap(r -> MyAssert.isFalse(r, DefineCode.ERR0012, "保存失败"))
-                                        .filterWhen(r -> addQuestionsAnswer(req));
+                                        .filterWhen(r -> addQuestionsAnswer(req))
+                                        .map(o -> {
+                                            return b;
+                                        });
                             });
                 });
     }
 
     private Mono<Boolean> addQuestionsAnswer(final AnswerReq req) {
         Criteria criteria = buildCriteria(req.getChapterId(), req.getCourseId(), req.getClassId(), req.getStudentId());
-        Update update = Update.update("uDate", DateUtil.now());
-        update.addToSet("questionIds", req.getQuestionId());
-        Mono<QuestionsLists> questionsListsMono = reactiveMongoTemplate.findOne(Query.query(criteria), QuestionsLists.class);
+        Mono<QuestionsLists> questionsListsMono = reactiveMongoTemplate.findOne(Query.query(criteria), QuestionsLists.class)
+                .switchIfEmpty(Mono.just(new QuestionsLists()));
         Mono<Long> setMono = questionsListsMono.filter(Objects::nonNull)
                 .flatMap(questionsLists -> {
                     if (questionsLists.getQuestionIds() == null) {
@@ -189,13 +195,22 @@ public class StudentAnswerService {
                         return Mono.just((long) set.size());
                     }
                 });
-        Mono<Long> longMono = questionsListsMono.map(QuestionsLists::getBigQuestions).flatMapMany(Flux::fromIterable).map(BigQuestion::getId).count();
+        Mono<Long> longMono = questionsListsMono
+                .filter(questionsLists -> questionsLists.getBigQuestions() != null)
+                .map(QuestionsLists::getBigQuestions)
+                .flatMapMany(Flux::fromIterable)
+                .map(BigQuestion::getId)
+                .count();
         return setMono.zipWith(longMono)
                 .flatMap(t -> {
-                    if (t.getT1().longValue() == t.getT2().longValue()) {
+                    Update update = Update.update("uDate", DateUtil.now());
+                    update.addToSet("questionIds", req.getQuestionId());
+                    if (t.getT1().intValue() == t.getT2().intValue()){
                         update.set("isAnswerCompleted", IS_ANSWER_COMPLETED_Y);
                     }
-                    return reactiveMongoTemplate.upsert(Query.query(criteria), update, QuestionsLists.class).map(UpdateResult::wasAcknowledged);
+                    return reactiveMongoTemplate.upsert(Query.query(criteria), update, QuestionsLists.class)
+                            .map(UpdateResult::wasAcknowledged)
+                            .flatMap(r -> MyAssert.isFalse(r, DefineCode.ERR0012, "保存失败"));
                 });
     }
 
