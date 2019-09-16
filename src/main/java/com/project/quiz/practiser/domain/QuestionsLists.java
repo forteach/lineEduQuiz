@@ -2,6 +2,7 @@ package com.project.quiz.practiser.domain;
 
 
 import com.project.quiz.practiser.domain.base.AbstractAnswer;
+import com.project.quiz.practiser.domain.base.QuestionAnswer;
 import com.project.quiz.questionlibrary.domain.BigQuestion;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -30,7 +31,7 @@ public class QuestionsLists extends AbstractAnswer {
     private String isAnswerCompleted;
 
     @ApiModelProperty(name = "bigQuestions", value = "学生生成题目信息", dataType = "list")
-    private List<BigQuestion> bigQuestions;
+    private List<QuestionAnswer> bigQuestions;
 
     @ApiModelProperty(name = "questionIds", value = "回答过的题目id集合", dataType = "list")
     private List<String> questionIds;

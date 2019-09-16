@@ -15,10 +15,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class AnswerVerify {
 
-    public void verify(AbstractReq abstractReq){
-        MyAssert.isNull(abstractReq.getCourseId(), DefineCode.ERR0010, "课程不为空");
-        MyAssert.isNull(abstractReq.getClassId(), DefineCode.ERR0010, "班级不为空");
-    }
+//    public void verify(AbstractReq abstractReq){
+//        MyAssert.isNull(abstractReq.getCourseId(), DefineCode.ERR0010, "课程不为空");
+//        MyAssert.isNull(abstractReq.getClassId(), DefineCode.ERR0010, "班级不为空");
+//    }
 
     public void verifyChapterId(final String courseId, final String chapterId){
         MyAssert.isNull(courseId, DefineCode.ERR0010, "课程不为空");

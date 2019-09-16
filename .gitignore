@@ -70,3 +70,4 @@ mvnw.cmd
 /gateway/logs/
 /portal/target/
 /redis/target/
+/,idea/
