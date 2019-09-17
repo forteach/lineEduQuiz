@@ -30,8 +30,8 @@ public class StudentFindQuestionsReq implements Serializable {
     @ApiModelProperty(name = "number", value = "随机题目数量", dataType = "int", required = true)
     private Integer number = 5;
 
-//    @ApiModelProperty(name = "classId", value = "班级id", dataType = "string")
-//    private String classId;
+    @ApiModelProperty(name = "classId", value = "班级id", dataType = "string")
+    private String classId;
 
     @ApiModelProperty(hidden = true)
     private String studentId;

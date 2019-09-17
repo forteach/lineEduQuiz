@@ -36,6 +36,7 @@ public class AnswerReq extends AbstractReq implements Serializable {
     private String studentId;
 
     public String getKey(){
-        return STUDENT_QUESTIONS.concat(studentId).concat("#").concat(super.getCourseId()).concat("#").concat(super.getChapterId());
+//        return STUDENT_QUESTIONS.concat(studentId).concat("#").concat(super.getCourseId()).concat("#").concat(super.getChapterId());
+        return STUDENT_QUESTIONS.concat(studentId).concat("#").concat(super.getChapterId());
     }
 }

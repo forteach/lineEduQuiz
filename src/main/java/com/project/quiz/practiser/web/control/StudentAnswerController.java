@@ -52,19 +52,19 @@ public class StudentAnswerController {
     @ApiOperation(value = "学生回答作业", notes = "学生端学生提交答案")
     @PostMapping("/saveAnswer")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "courseId", value = "课程id", dataType = "string", required = true, paramType = "form"),
+//            @ApiImplicitParam(name = "courseId", value = "课程id", dataType = "string", required = true, paramType = "form"),
             @ApiImplicitParam(name = "chapterId", value = "章节id", dataType = "string", required = true, paramType = "form"),
             @ApiImplicitParam(name = "questionId", value = "问题id", dataType = "string", required = true, paramType = "form"),
-            @ApiImplicitParam(name = "chapterName", value = "章节名称", dataType = "string", required = true, paramType = "form"),
-            @ApiImplicitParam(name = "stuAnswer", value = "回答内容", required = true, paramType = "query"),
-            @ApiImplicitParam(name = "classId", value = "班级id", required = true, paramType = "query"),
-            @ApiImplicitParam(name = "studentId", value = "学生id", required = true, paramType = "query")
+//            @ApiImplicitParam(name = "chapterName", value = "章节名称", dataType = "string", required = true, paramType = "form"),
+            @ApiImplicitParam(name = "stuAnswer", value = "回答内容", required = true, paramType = "form"),
+//            @ApiImplicitParam(name = "classId", value = "班级id", required = true, paramType = "form"),
+            @ApiImplicitParam(name = "studentId", value = "学生id", required = true, paramType = "form")
     })
     public Mono<WebResult> saveAnswer(@RequestBody AnswerReq req, ServerHttpRequest request){
-        answerVerify.verify(req);
+        answerVerify.verifyChapterId(req.getChapterId());
         MyAssert.isNull(req.getQuestionId(), DefineCode.ERR0010, "题目id不为空");
         MyAssert.isNull(req.getStuAnswer(), DefineCode.ERR0010, "答案不为空");
-        MyAssert.isNull(req.getChapterName(), DefineCode.ERR0010, "章节名称不为空");
+//        MyAssert.isNull(req.getChapterName(), DefineCode.ERR0010, "章节名称不为空");
         req.setStudentId(tokenService.getStudentId(request));
         return studentAnswerService.saveStudentAnswer(req).map(WebResult::okResult);
     }
@@ -114,7 +114,7 @@ public class StudentAnswerController {
             @ApiImplicitParam(value = "章节id", name = "chapterId", example = "章节id", dataType = "string", required = true, paramType = "query"),
             //@ApiImplicitParam(value = "章节名称", name = "chapterName", example = "章节名称", dataType = "string", required = true, paramType = "query"),
 //            @ApiImplicitParam(value = "课程id", name = "courseId", example = "课程id", dataType = "string", required = true, paramType = "query"),
-//            @ApiImplicitParam(value = "班级id", name = "classId", example = "班级id", dataType = "string", required = true, paramType = "query"),
+            @ApiImplicitParam(value = "班级id", name = "classId", example = "班级id", dataType = "string", required = true, paramType = "query"),
             @ApiImplicitParam(name = "number", value = "随机题目数量", dataType = "int", required = true, paramType = "query")
     })
     @PostMapping("/findQuestions")
