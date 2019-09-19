@@ -61,18 +61,23 @@ public class StudentAnswerService {
         Mono<Boolean> booleanMono = reactiveRedisTemplate.hasKey(key);
         return booleanMono.flatMap(b -> {
             if (!b) {
-                return findBigQuestions(req)
-                        .filterWhen(list -> setRedisStudentQuestions(list, key))
-                        .flatMapMany(Flux::fromIterable)
-//                        .map(this::setAnswerIsNull)
-                        .collectList();
+                return findQuestions(req, key);
             } else {
-                return findRedisQuestions(key);
-//                        .flatMapMany(Flux::fromIterable)
-//                        .map(this::setAnswerIsNull)
-//                        .collectList();
+                return findRedisQuestions(key).flatMap(list -> {
+                    if (list.isEmpty()){
+                        return findQuestions(req, key);
+                    }
+                    return Mono.just(list);
+                });
             }
         });
+    }
+
+    private Mono<List<QuestionAnswer>> findQuestions(final StudentFindQuestionsReq req, final String key){
+        return findBigQuestions(req)
+                .filterWhen(list -> setRedisStudentQuestions(list, key))
+                .flatMapMany(Flux::fromIterable)
+                .collectList();
     }
 
     /**
