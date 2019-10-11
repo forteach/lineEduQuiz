@@ -5,7 +5,6 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.mongodb.client.result.UpdateResult;
 import com.project.quiz.common.DefineCode;
@@ -268,8 +267,14 @@ public class QuestionServiceImpl<T extends AbstractExam> implements QuestionServ
             if (StrUtil.isBlank(b.getId())) {
                 b.setId(IdUtil.objectId());
             }
-            return reactiveRedisTemplate.opsForSet().add(QUESTIONS_VERIFY, b.getId())
+            return reactiveRedisTemplate.opsForSet().add(QUESTIONS_VERIFY, b.getId()).log("type")
                     .doOnError(o -> MyAssert.isNull(null, DefineCode.ERR0010, "添加记录失败"))
+                    .map(o -> {
+                        if (Integer.parseInt(String.valueOf(o)) == 0) {
+                            return false;
+                        }
+                        return true;
+                    })
                     .filterWhen(o -> {
                         Map<String, String> map = CollUtil.newHashMap();
                         map.put("questionId", b.getId());
@@ -280,32 +285,43 @@ public class QuestionServiceImpl<T extends AbstractExam> implements QuestionServ
                         map.put("centerAreaId", b.getCenterAreaId());
                         map.put("centerName", b.getCenterName());
                         map.put("chapterId", b.getChapterId());
+                        map.put("choiceQstTxt", b.getChoiceQstTxt());
                         return reactiveRedisTemplate.opsForHash().putAll(QUESTION_CHAPTER.concat(b.getId()), map).flatMap(t -> {
-                            return reactiveRedisTemplate.expire(QUESTION_CHAPTER.concat(b.getId()), Duration.ofDays(30));
+                            return reactiveRedisTemplate.expire(QUESTION_CHAPTER.concat(b.getId()), Duration.ofDays(14));
                         });
                     }).flatMap(o -> {
-                        return reactiveRedisTemplate.opsForValue().set(QUESTION_ID.concat(bigQuestion.getId()), JSON.toJSONString(bigQuestion), Duration.ofDays(30));
+                        return reactiveMongoTemplate.save(bigQuestion).map(obj -> {
+                            MyAssert.isNull(obj, DefineCode.ERR0013, "保存失败");
+                            return true;
+                        });
                     });
         });
     }
 
     @Override
-    public Mono<T> findQuestionById(String questionId) {
-        return reactiveRedisTemplate.opsForValue().get(QUESTION_ID.concat(questionId))
-                .switchIfEmpty(Mono.error(new CustomException("没有找到考题")))
-                .flatMap(b -> Mono.just(JSONUtil.toBean(String.valueOf(b), BigQuestion.class)));
+    public Mono<BigQuestion> findQuestionById(String questionId) {
+        return reactiveMongoTemplate.findById(questionId, BigQuestion.class)
+                .switchIfEmpty(Mono.error(new CustomException("没有找到考题")));
     }
 
     @Override
     public Mono<Page<BigQuestion>> findPageAll(final FindQuestionsReq req) {
-        Query query = setWherePageAll(req.getCourseId(), req.getChapterId(), req.getTeacherId(), req.getExamType());
+        return findBigQuestion(setWherePageAll(req.getCourseId(), req.getChapterId(), req.getTeacherId(), req.getExamType(), VERIFY_STATUS_AGREE), req);
+    }
+
+    @Override
+    public Mono<Page<BigQuestion>> findAllPageQuestion(FindQuestionsReq req) {
+        return findBigQuestion(setWherePageAll(req.getCourseId(), req.getChapterId(), req.getTeacherId(), req.getExamType(), ""), req);
+    }
+
+    private Mono<Page<BigQuestion>> findBigQuestion(Query query, final FindQuestionsReq req) {
         req.queryPaging(query);
         Mono<Long> count = reactiveMongoTemplate.count(query, BigQuestion.class);
         Mono<List<BigQuestion>> list = reactiveMongoTemplate.find(query, BigQuestion.class).collectList();
         return list.zipWith(count).map(t -> new PageImpl<>(t.getT1(), PageRequest.of(req.getPage(), req.getSize()), t.getT2()));
     }
 
-    private Query setWherePageAll(final String courseId, final String chapterId, final String teacherId, final String examType) {
+    private Query setWherePageAll(final String courseId, final String chapterId, final String teacherId, final String examType, String verifyStatus) {
         Criteria criteria = new Criteria();
         if (StrUtil.isNotBlank(courseId)) {
             criteria.and("courseId").is(courseId);
@@ -319,47 +335,9 @@ public class QuestionServiceImpl<T extends AbstractExam> implements QuestionServ
         if (StrUtil.isNotBlank(examType)) {
             criteria.and("examType").is(examType);
         }
+        if (StrUtil.isNotBlank(verifyStatus)) {
+            criteria.and("verifyStatus").is(verifyStatus);
+        }
         return Query.query(criteria);
     }
-
-//    private Update setUpdate(BigQuestion bigQuestion) {
-//        Update update = new Update();
-//        if (StrUtil.isNotBlank(bigQuestion.getTeacherId())) {
-//            update.set("teacherId", bigQuestion.getTeacherId());
-//        }
-//        if (StrUtil.isNotBlank(bigQuestion.getAnalysis())) {
-//            update.set("analysis", bigQuestion.getAnalysis());
-//        }
-//        if (StrUtil.isNotBlank(bigQuestion.getAnswer())) {
-//            update.set("answer", bigQuestion.getAnswer());
-//        }
-//        if (StrUtil.isNotBlank(bigQuestion.getChapterId())) {
-//            update.set("chapterId", bigQuestion.getChapterId());
-//        }
-//        if (StrUtil.isNotBlank(bigQuestion.getChoiceQstTxt())) {
-//            update.set("choiceQstTxt", bigQuestion.getChoiceQstTxt());
-//        }
-//        if (StrUtil.isNotBlank(bigQuestion.getCourseId())) {
-//            update.set("courseId", bigQuestion.getCourseId());
-//        }
-//        if (StrUtil.isNotBlank(bigQuestion.getExamType())) {
-//            update.set("examType", bigQuestion.getExamType());
-//        }
-//        if (StrUtil.isNotBlank(bigQuestion.getLevelId())) {
-//            update.set("levelId", bigQuestion.getLevelId());
-//        }
-//        if (StrUtil.isNotBlank(bigQuestion.getChapterName())) {
-//            update.set("chapterName", bigQuestion.getChapterName());
-//        }
-//        if (StrUtil.isNotBlank(String.valueOf(bigQuestion.getScore()))) {
-//            update.set("score", bigQuestion.getScore());
-//        }
-////        if (StrUtil.isNotBlank(bigQuestion.getChoiceType())) {
-////            update.set("choiceType", bigQuestion.getChoiceType());
-////        }
-//        if (!bigQuestion.getOptChildren().isEmpty()) {
-//            update.set("optChildren", bigQuestion.getOptChildren());
-//        }
-//        return update;
-//    }
 }

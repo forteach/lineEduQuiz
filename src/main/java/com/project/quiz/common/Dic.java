@@ -127,4 +127,10 @@ public class Dic {
     public static final String QUESTION_ID = "questionId$";
     public static final String QUESTION_CHAPTER = "questionChapter$";
     public static final String QUESTIONS_VERIFY = "questionsVerify";
+
+
+    /**申请审核状态 0 同意，1 申请 2 拒绝*/
+    public static final String VERIFY_STATUS_AGREE = "0";
+    public static final String VERIFY_STATUS_APPLY = "1";
+    public static final String VERIFY_STATUS_REFUSE = "2";
 }

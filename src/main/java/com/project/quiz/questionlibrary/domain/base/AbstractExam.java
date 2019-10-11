@@ -11,6 +11,8 @@ import org.springframework.data.mongodb.core.index.Indexed;
 
 import java.util.List;
 
+import static com.project.quiz.common.Dic.VERIFY_STATUS_APPLY;
+
 /**
  * @Description:
  * @author: liu zhenming
@@ -95,4 +97,9 @@ public abstract class AbstractExam extends BaseEntity {
     @JsonView(BigQuestionView.Summary.class)
     @ApiModelProperty(value = "选项集", name = "optChildren", required = true)
     protected List<ChoiceQstOption> optChildren;
+
+    /**
+     * 是否有效 0,有效, 1 无效，2 拒绝
+     */
+    private String verifyStatus = VERIFY_STATUS_APPLY;
 }

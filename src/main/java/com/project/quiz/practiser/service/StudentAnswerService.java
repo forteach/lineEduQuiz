@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import static com.project.quiz.common.Dic.VERIFY_STATUS_AGREE;
 import static com.project.quiz.practiser.constant.Dic.IS_ANSWER_COMPLETED_N;
 import static com.project.quiz.practiser.constant.Dic.IS_ANSWER_COMPLETED_Y;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
@@ -306,6 +307,7 @@ public class StudentAnswerService {
         if (StrUtil.isNotBlank(courseId)) {
             criteria.and("courseId").is(courseId);
         }
+        criteria.is("verifyStatus").is(VERIFY_STATUS_AGREE);
         return criteria;
     }
 

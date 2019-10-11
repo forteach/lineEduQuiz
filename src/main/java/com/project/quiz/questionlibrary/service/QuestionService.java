@@ -82,6 +82,7 @@ public interface QuestionService<T extends AbstractExam> {
 
     /**
      * 查找题用于
+     *
      * @param ids
      * @return
      */
@@ -91,5 +92,7 @@ public interface QuestionService<T extends AbstractExam> {
 
     Mono<Page<BigQuestion>> findPageAll(final FindQuestionsReq req);
 
-    Mono<T> findQuestionById(String questionId);
+    Mono<Page<BigQuestion>> findAllPageQuestion(final FindQuestionsReq req);
+
+    Mono<BigQuestion> findQuestionById(String questionId);
 }

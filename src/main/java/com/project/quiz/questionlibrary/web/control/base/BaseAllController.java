@@ -1,6 +1,7 @@
 package com.project.quiz.questionlibrary.web.control.base;
 
 
+import cn.hutool.core.util.StrUtil;
 import com.project.quiz.common.DefineCode;
 import com.project.quiz.common.MyAssert;
 import com.project.quiz.common.WebResult;
@@ -73,6 +74,7 @@ public abstract class BaseAllController<T extends AbstractExam> {
         MyAssert.isNull(bigQuestion.getCourseId(), DefineCode.ERR0010, "章节Id不为空");
         MyAssert.isNull(bigQuestion.getCourseName(), DefineCode.ERR0010, "章节名称不为空");
         MyAssert.isNull(bigQuestion.getCenterAreaId(), DefineCode.ERR0010, "学习中心不为空");
+        MyAssert.isTrue(StrUtil.isBlank(bigQuestion.getCenterAreaId()), DefineCode.ERR0010, "学习中心Id不能为空");
         MyAssert.isNull(bigQuestion.getCenterName(), DefineCode.ERR0010, "学习中心名称不为空");
         tokenService.getTeacherId(request).ifPresent(bigQuestion::setTeacherId);
         return service.editBigQuestion(bigQuestion).map(WebResult::okResult);
@@ -90,7 +92,11 @@ public abstract class BaseAllController<T extends AbstractExam> {
     @PostMapping(path = "/findQuestionPageAll")
     public Mono<WebResult> findQuestionPageAll(@RequestBody FindQuestionsReq req, ServerHttpRequest request) {
         valideSort(req.getPage(), req.getSize());
-        return service.findPageAll(req).map(WebResult::okResult);
+        if (tokenService.isStudent(request)) {
+            return service.findPageAll(req).map(WebResult::okResult);
+        }else {
+            return service.findAllPageQuestion(req).map(WebResult::okResult);
+        }
     }
 
     @ApiOperation(value = "查询习题详细信息")

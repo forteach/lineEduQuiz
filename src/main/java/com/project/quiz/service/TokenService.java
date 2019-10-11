@@ -159,4 +159,11 @@ public class TokenService {
         String token = request.getQueryParams().getFirst("token");
         return Mono.just(getValue(token, 1));
     }
+
+    public boolean isStudent(ServerHttpRequest request) {
+        String token = request.getHeaders().getFirst("token");
+        Assert.notNull(token, "token is null");
+        MyAssert.blank(token, DefineCode.ERR0004, "token is null");
+        return TOKEN_STUDENT.equals(getValue(token, 1)) ? true : false;
+    }
 }
