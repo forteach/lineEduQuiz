@@ -1,13 +1,11 @@
 package com.project.quiz.practiser.domain.base;
 
 import com.project.quiz.questionlibrary.domain.BigQuestion;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @Builder
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class QuestionAnswer extends BigQuestion {

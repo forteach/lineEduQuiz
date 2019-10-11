@@ -1,10 +1,12 @@
 package com.project.quiz.questionlibrary.service.impl;
 
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
-import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import com.project.quiz.common.DefineCode;
 import com.project.quiz.common.MyAssert;
@@ -25,13 +27,15 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.lang.reflect.ParameterizedType;
+import java.time.Duration;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 
 import static com.project.quiz.common.Dic.*;
 
@@ -47,14 +51,16 @@ public class QuestionServiceImpl<T extends AbstractExam> implements QuestionServ
 
     private final BaseQuestionMongoRepository repository;
     private final ReactiveMongoTemplate reactiveMongoTemplate;
+    private final ReactiveRedisTemplate reactiveRedisTemplate;
     private final QuestionReflect questionReflect;
 
-    public QuestionServiceImpl(ReactiveMongoTemplate reactiveMongoTemplate,
+    public QuestionServiceImpl(ReactiveMongoTemplate reactiveMongoTemplate, ReactiveRedisTemplate reactiveRedisTemplate,
                                QuestionReflect questionReflect,
                                BaseQuestionMongoRepository repository) {
         this.repository = repository;
         this.reactiveMongoTemplate = reactiveMongoTemplate;
         this.questionReflect = questionReflect;
+        this.reactiveRedisTemplate = reactiveRedisTemplate;
     }
 
     /**
@@ -136,9 +142,9 @@ public class QuestionServiceImpl<T extends AbstractExam> implements QuestionServ
      * @param id
      * @return
      */
-    private Mono<DeleteResult> delBankAssociation(final List<String> id) {
-        return reactiveMongoTemplate.remove(Query.query(Criteria.where(MONGDB_ID).is(id)), BigQuestion.class);
-    }
+//    private Mono<DeleteResult> delBankAssociation(final List<String> id) {
+//        return reactiveMongoTemplate.remove(Query.query(Criteria.where(MONGDB_ID).is(id)), BigQuestion.class);
+//    }
 
     /**
      * 删除单道题
@@ -258,18 +264,36 @@ public class QuestionServiceImpl<T extends AbstractExam> implements QuestionServ
 
     @Override
     public Mono<Boolean> editBigQuestion(BigQuestion bigQuestion) {
-        if (StrUtil.isNotBlank(bigQuestion.getId())) {
-            //修改
-            return reactiveMongoTemplate.upsert(Query.query(Criteria.where(MONGDB_ID).is(bigQuestion.getId())), setUpdate(bigQuestion), BigQuestion.class)
-                    .map(UpdateResult::wasAcknowledged)
-                    .map(b -> MyAssert.isFalse(b, DefineCode.ERR0010, "修改失败"))
-                    .map(Objects::nonNull);
-        } else {
-            //新增
-            return reactiveMongoTemplate.save(bigQuestion)
-                    .doOnError(t -> MyAssert.isNull(null, DefineCode.ERR0012, "保存失败"))
-                    .flatMap(b -> Mono.just(true));
-        }
+        return Mono.just(bigQuestion).flatMap(b -> {
+            if (StrUtil.isBlank(b.getId())) {
+                b.setId(IdUtil.objectId());
+            }
+            return reactiveRedisTemplate.opsForSet().add(QUESTIONS_VERIFY, b.getId())
+                    .doOnError(o -> MyAssert.isNull(null, DefineCode.ERR0010, "添加记录失败"))
+                    .filterWhen(o -> {
+                        Map<String, String> map = CollUtil.newHashMap();
+                        map.put("questionId", b.getId());
+                        map.put("courseId", b.getCourseId());
+                        map.put("courseName", b.getCourseName());
+                        map.put("teacherId", b.getTeacherId());
+                        map.put("teacherName", b.getTeacherName());
+                        map.put("centerAreaId", b.getCenterAreaId());
+                        map.put("centerName", b.getCenterName());
+                        map.put("chapterId", b.getChapterId());
+                        return reactiveRedisTemplate.opsForHash().putAll(QUESTION_CHAPTER.concat(b.getId()), map).flatMap(t -> {
+                            return reactiveRedisTemplate.expire(QUESTION_CHAPTER.concat(b.getId()), Duration.ofDays(30));
+                        });
+                    }).flatMap(o -> {
+                        return reactiveRedisTemplate.opsForValue().set(QUESTION_ID.concat(bigQuestion.getId()), JSON.toJSONString(bigQuestion), Duration.ofDays(30));
+                    });
+        });
+    }
+
+    @Override
+    public Mono<T> findQuestionById(String questionId) {
+        return reactiveRedisTemplate.opsForValue().get(QUESTION_ID.concat(questionId))
+                .switchIfEmpty(Mono.error(new CustomException("没有找到考题")))
+                .flatMap(b -> Mono.just(JSONUtil.toBean(String.valueOf(b), BigQuestion.class)));
     }
 
     @Override
@@ -298,44 +322,44 @@ public class QuestionServiceImpl<T extends AbstractExam> implements QuestionServ
         return Query.query(criteria);
     }
 
-    private Update setUpdate(BigQuestion bigQuestion) {
-        Update update = new Update();
-        if (StrUtil.isNotBlank(bigQuestion.getTeacherId())) {
-            update.set("teacherId", bigQuestion.getTeacherId());
-        }
-        if (StrUtil.isNotBlank(bigQuestion.getAnalysis())) {
-            update.set("analysis", bigQuestion.getAnalysis());
-        }
-        if (StrUtil.isNotBlank(bigQuestion.getAnswer())) {
-            update.set("answer", bigQuestion.getAnswer());
-        }
-        if (StrUtil.isNotBlank(bigQuestion.getChapterId())) {
-            update.set("chapterId", bigQuestion.getChapterId());
-        }
-        if (StrUtil.isNotBlank(bigQuestion.getChoiceQstTxt())) {
-            update.set("choiceQstTxt", bigQuestion.getChoiceQstTxt());
-        }
-        if (StrUtil.isNotBlank(bigQuestion.getCourseId())) {
-            update.set("courseId", bigQuestion.getCourseId());
-        }
-        if (StrUtil.isNotBlank(bigQuestion.getExamType())) {
-            update.set("examType", bigQuestion.getExamType());
-        }
-        if (StrUtil.isNotBlank(bigQuestion.getLevelId())) {
-            update.set("levelId", bigQuestion.getLevelId());
-        }
-        if (StrUtil.isNotBlank(bigQuestion.getChapterName())) {
-            update.set("chapterName", bigQuestion.getChapterName());
-        }
-        if (StrUtil.isNotBlank(String.valueOf(bigQuestion.getScore()))) {
-            update.set("score", bigQuestion.getScore());
-        }
-//        if (StrUtil.isNotBlank(bigQuestion.getChoiceType())) {
-//            update.set("choiceType", bigQuestion.getChoiceType());
+//    private Update setUpdate(BigQuestion bigQuestion) {
+//        Update update = new Update();
+//        if (StrUtil.isNotBlank(bigQuestion.getTeacherId())) {
+//            update.set("teacherId", bigQuestion.getTeacherId());
 //        }
-        if (!bigQuestion.getOptChildren().isEmpty()) {
-            update.set("optChildren", bigQuestion.getOptChildren());
-        }
-        return update;
-    }
+//        if (StrUtil.isNotBlank(bigQuestion.getAnalysis())) {
+//            update.set("analysis", bigQuestion.getAnalysis());
+//        }
+//        if (StrUtil.isNotBlank(bigQuestion.getAnswer())) {
+//            update.set("answer", bigQuestion.getAnswer());
+//        }
+//        if (StrUtil.isNotBlank(bigQuestion.getChapterId())) {
+//            update.set("chapterId", bigQuestion.getChapterId());
+//        }
+//        if (StrUtil.isNotBlank(bigQuestion.getChoiceQstTxt())) {
+//            update.set("choiceQstTxt", bigQuestion.getChoiceQstTxt());
+//        }
+//        if (StrUtil.isNotBlank(bigQuestion.getCourseId())) {
+//            update.set("courseId", bigQuestion.getCourseId());
+//        }
+//        if (StrUtil.isNotBlank(bigQuestion.getExamType())) {
+//            update.set("examType", bigQuestion.getExamType());
+//        }
+//        if (StrUtil.isNotBlank(bigQuestion.getLevelId())) {
+//            update.set("levelId", bigQuestion.getLevelId());
+//        }
+//        if (StrUtil.isNotBlank(bigQuestion.getChapterName())) {
+//            update.set("chapterName", bigQuestion.getChapterName());
+//        }
+//        if (StrUtil.isNotBlank(String.valueOf(bigQuestion.getScore()))) {
+//            update.set("score", bigQuestion.getScore());
+//        }
+////        if (StrUtil.isNotBlank(bigQuestion.getChoiceType())) {
+////            update.set("choiceType", bigQuestion.getChoiceType());
+////        }
+//        if (!bigQuestion.getOptChildren().isEmpty()) {
+//            update.set("optChildren", bigQuestion.getOptChildren());
+//        }
+//        return update;
+//    }
 }

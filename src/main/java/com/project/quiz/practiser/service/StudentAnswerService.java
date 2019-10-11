@@ -167,7 +167,11 @@ public class StudentAnswerService {
      * @return
      */
     private Mono<Boolean> setRedisStudentQuestions(final List<QuestionAnswer> bigQuestions, final String key) {
-        return reactiveRedisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(bigQuestions), Duration.ofHours(24));
+        if (bigQuestions.isEmpty()) {
+            return Mono.just(true);
+        }else {
+            return reactiveRedisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(bigQuestions), Duration.ofHours(24));
+        }
     }
 
     /**

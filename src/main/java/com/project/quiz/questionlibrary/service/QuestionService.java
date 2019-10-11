@@ -90,4 +90,6 @@ public interface QuestionService<T extends AbstractExam> {
     Mono<Boolean> editBigQuestion(final BigQuestion bigQuestion);
 
     Mono<Page<BigQuestion>> findPageAll(final FindQuestionsReq req);
+
+    Mono<T> findQuestionById(String questionId);
 }

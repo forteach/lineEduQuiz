@@ -123,4 +123,8 @@ public class Dic {
      * 学生信息从redis 取出通过从[oracle 数据库取出保存进入(redis) hash]
      */
     public static final String STUDENT_ADO = "studentsData$";
+
+    public static final String QUESTION_ID = "questionId$";
+    public static final String QUESTION_CHAPTER = "questionChapter$";
+    public static final String QUESTIONS_VERIFY = "questionsVerify";
 }
