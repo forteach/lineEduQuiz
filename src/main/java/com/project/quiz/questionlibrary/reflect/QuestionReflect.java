@@ -5,14 +5,11 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import com.project.quiz.exceptions.CustomException;
 import com.project.quiz.questionlibrary.domain.question.ChoiceQst;
-import com.project.quiz.questionlibrary.domain.question.ChoiceQstOption;
 import com.project.quiz.questionlibrary.domain.question.TrueOrFalse;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @Description:

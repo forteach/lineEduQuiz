@@ -2,7 +2,6 @@ package com.project.quiz.practiser.web.req.verify;
 
 import com.project.quiz.common.DefineCode;
 import com.project.quiz.common.MyAssert;
-import com.project.quiz.practiser.web.req.base.AbstractReq;
 import org.springframework.stereotype.Component;
 
 /**
@@ -20,11 +19,12 @@ public class AnswerVerify {
 //        MyAssert.isNull(abstractReq.getClassId(), DefineCode.ERR0010, "班级不为空");
 //    }
 
-    public void verifyChapterId(final String courseId, final String chapterId){
+    public void verifyChapterId(final String courseId, final String chapterId) {
         MyAssert.isNull(courseId, DefineCode.ERR0010, "课程不为空");
         MyAssert.isNull(chapterId, DefineCode.ERR0010, "章节不为空");
     }
-    public void verifyChapterId(final String chapterId){
+
+    public void verifyChapterId(final String chapterId) {
         MyAssert.isNull(chapterId, DefineCode.ERR0010, "章节不为空");
     }
 }

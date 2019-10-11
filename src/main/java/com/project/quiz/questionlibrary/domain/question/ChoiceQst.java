@@ -1,15 +1,10 @@
 package com.project.quiz.questionlibrary.domain.question;
 
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.project.quiz.questionlibrary.domain.base.AbstractExam;
-import com.project.quiz.web.vo.BigQuestionView;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.util.List;
 
 /**
  * @Description: 选择题

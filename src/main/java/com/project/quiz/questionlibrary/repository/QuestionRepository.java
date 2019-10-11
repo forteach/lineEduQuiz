@@ -2,9 +2,6 @@ package com.project.quiz.questionlibrary.repository;
 
 import com.project.quiz.questionlibrary.domain.BigQuestion;
 import com.project.quiz.questionlibrary.repository.base.BaseQuestionMongoRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import reactor.core.publisher.Mono;
 
 /**
  * @author: zhangyy
@@ -13,6 +10,6 @@ import reactor.core.publisher.Mono;
  * @version: 1.0
  * @description:
  */
-public interface QuestionRepository extends BaseQuestionMongoRepository <BigQuestion>{
+public interface QuestionRepository extends BaseQuestionMongoRepository<BigQuestion> {
 
 }

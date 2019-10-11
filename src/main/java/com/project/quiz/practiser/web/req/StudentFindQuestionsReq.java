@@ -1,7 +1,6 @@
 package com.project.quiz.practiser.web.req;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;

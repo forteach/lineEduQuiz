@@ -3,7 +3,6 @@ package com.project.quiz.practiser.domain;
 
 import com.project.quiz.practiser.domain.base.AbstractAnswer;
 import com.project.quiz.practiser.domain.base.QuestionAnswer;
-import com.project.quiz.questionlibrary.domain.BigQuestion;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;

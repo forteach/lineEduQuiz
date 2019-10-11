@@ -1,6 +1,5 @@
 package com.project.quiz.practiser.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.quiz.practiser.domain.base.AbstractAnswer;
 import com.project.quiz.questionlibrary.domain.BigQuestion;
 import io.swagger.annotations.ApiModel;
