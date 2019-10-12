@@ -267,34 +267,43 @@ public class QuestionServiceImpl<T extends AbstractExam> implements QuestionServ
             if (StrUtil.isBlank(b.getId())) {
                 b.setId(IdUtil.objectId());
             }
-            return reactiveRedisTemplate.opsForSet().add(QUESTIONS_VERIFY, b.getId()).log("type")
+            return reactiveRedisTemplate.opsForSet().add(QUESTIONS_VERIFY, b.getId())
                     .doOnError(o -> MyAssert.isNull(null, DefineCode.ERR0010, "添加记录失败"))
-                    .map(o -> {
-                        if (Integer.parseInt(String.valueOf(o)) == 0) {
-                            return false;
-                        }
-                        return true;
-                    })
-                    .filterWhen(o -> {
-                        Map<String, String> map = CollUtil.newHashMap();
-                        map.put("questionId", b.getId());
-                        map.put("courseId", b.getCourseId());
-                        map.put("courseName", b.getCourseName());
-                        map.put("teacherId", b.getTeacherId());
-                        map.put("teacherName", b.getTeacherName());
-                        map.put("centerAreaId", b.getCenterAreaId());
-                        map.put("centerName", b.getCenterName());
-                        map.put("chapterId", b.getChapterId());
-                        map.put("choiceQstTxt", b.getChoiceQstTxt());
-                        return reactiveRedisTemplate.opsForHash().putAll(QUESTION_CHAPTER.concat(b.getId()), map).flatMap(t -> {
-                            return reactiveRedisTemplate.expire(QUESTION_CHAPTER.concat(b.getId()), Duration.ofDays(14));
-                        });
-                    }).flatMap(o -> {
-                        return reactiveMongoTemplate.save(bigQuestion).map(obj -> {
-                            MyAssert.isNull(obj, DefineCode.ERR0013, "保存失败");
-                            return true;
-                        });
-                    });
+                    .flatMap(l -> saveRedisHash(b))
+                    .flatMap(o -> saveMongoQuestion(b));
+        });
+    }
+
+    /**
+     * 生成习题简介记录，用于教师端查看管理审核
+     * @param b
+     * @return
+     */
+    private Mono<Boolean> saveRedisHash(final BigQuestion b) {
+        Map<String, String> map = CollUtil.newHashMap();
+        map.put("questionId", b.getId());
+        map.put("courseId", b.getCourseId());
+        map.put("courseName", b.getCourseName());
+        map.put("teacherId", b.getTeacherId());
+        map.put("teacherName", b.getTeacherName());
+        map.put("centerAreaId", b.getCenterAreaId());
+        map.put("centerName", b.getCenterName());
+        map.put("chapterId", b.getChapterId());
+        map.put("choiceQstTxt", b.getChoiceQstTxt());
+        return reactiveRedisTemplate.opsForHash()
+                .putAll(QUESTION_CHAPTER.concat(b.getId()), map)
+                .flatMap(t -> reactiveRedisTemplate.expire(QUESTION_CHAPTER.concat(b.getId()), Duration.ofDays(14)));
+    }
+
+    /**
+     * 添加保存mongodb 习题记录
+     * @param bigQuestion
+     * @return
+     */
+    private Mono<Boolean> saveMongoQuestion(final BigQuestion bigQuestion){
+        return reactiveMongoTemplate.save(bigQuestion).map(obj -> {
+            MyAssert.isNull(obj, DefineCode.ERR0013, "保存失败");
+            return true;
         });
     }
 
