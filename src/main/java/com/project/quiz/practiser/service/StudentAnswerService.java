@@ -89,6 +89,8 @@ public class StudentAnswerService {
      */
     private Mono<List<QuestionAnswer>> randomBigQuestions(final StudentFindQuestionsReq req) {
         //使用mongoDB 随机题目
+        Criteria criteria =createCriteria(req.getChapterId(), "");
+        criteria.and("verifyStatus").is(VERIFY_STATUS_AGREE);
         return reactiveMongoTemplate.aggregate(Aggregation.newAggregation(match(createCriteria(req.getChapterId(), "")),
                 Aggregation.sample(req.getNumber())), "bigQuestion", BigQuestion.class)
                 .map(bigQuestion -> {
@@ -307,7 +309,6 @@ public class StudentAnswerService {
         if (StrUtil.isNotBlank(courseId)) {
             criteria.and("courseId").is(courseId);
         }
-        criteria.is("verifyStatus").is(VERIFY_STATUS_AGREE);
         return criteria;
     }
 
