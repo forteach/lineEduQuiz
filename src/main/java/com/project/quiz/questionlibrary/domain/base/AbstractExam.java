@@ -1,5 +1,6 @@
 package com.project.quiz.questionlibrary.domain.base;
 
+import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.project.quiz.domain.BaseEntity;
 import com.project.quiz.questionlibrary.domain.question.ChoiceQstOption;
@@ -101,5 +102,5 @@ public abstract class AbstractExam extends BaseEntity {
     /**
      * 是否有效 0,有效, 1 无效，2 拒绝
      */
-    private String verifyStatus = VERIFY_STATUS_APPLY;
+    private String verifyStatus = StrUtil.isNotBlank(this.verifyStatus) ? this.verifyStatus : VERIFY_STATUS_APPLY;
 }

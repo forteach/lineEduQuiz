@@ -89,9 +89,9 @@ public class StudentAnswerService {
      */
     private Mono<List<QuestionAnswer>> randomBigQuestions(final StudentFindQuestionsReq req) {
         //使用mongoDB 随机题目
-        Criteria criteria =createCriteria(req.getChapterId(), "");
+        Criteria criteria =createCriteria(req.getChapterId(), req.getCourseId());
         criteria.and("verifyStatus").is(VERIFY_STATUS_AGREE);
-        return reactiveMongoTemplate.aggregate(Aggregation.newAggregation(match(createCriteria(req.getChapterId(), "")),
+        return reactiveMongoTemplate.aggregate(Aggregation.newAggregation(match(criteria),
                 Aggregation.sample(req.getNumber())), "bigQuestion", BigQuestion.class)
                 .map(bigQuestion -> {
                     QuestionAnswer questionAnswer = new QuestionAnswer();
@@ -115,8 +115,8 @@ public class StudentAnswerService {
      * @return
      */
     private Mono<Boolean> setQuestions(final List<QuestionAnswer> list, final StudentFindQuestionsReq req) {
-        Criteria criteria = buildCriteriaQuestionId(req.getChapterId(), "", req.getClassId(), "", req.getStudentId());
-        Update update = updateQuery(req.getChapterId(), "", "", req.getClassId(), "", req.getStudentId());
+        Criteria criteria = buildCriteriaQuestionId(req.getChapterId(), req.getCourseId(), req.getClassId(), "", req.getStudentId());
+        Update update = updateQuery(req.getChapterId(), "", req.getCourseId(), req.getClassId(), "", req.getStudentId());
         update.set("bigQuestions", list);
         update.set("isAnswerCompleted", IS_ANSWER_COMPLETED_N);
         return reactiveMongoTemplate.upsert(Query.query(criteria), update, QuestionsLists.class)
@@ -137,7 +137,7 @@ public class StudentAnswerService {
      * @return
      */
     private Mono<List<QuestionAnswer>> findBigQuestions(final StudentFindQuestionsReq req) {
-        Criteria criteria = createCriteria(req.getChapterId(), "");
+        Criteria criteria = createCriteria(req.getChapterId(), req.getCourseId());
         if (StrUtil.isNotBlank(req.getStudentId())) {
             criteria.and("studentId").is(req.getStudentId());
         }
@@ -194,8 +194,8 @@ public class StudentAnswerService {
                     MyAssert.isNull(questionAnswer.getId(), DefineCode.ERR0010, "不存在相关习题信息");
                     return checkResult(questionAnswer.getAnswer(), req.getStuAnswer())
                             .flatMap(b -> {
-                                Criteria criteria = buildCriteriaQuestionId(req.getChapterId(), "", "", req.getQuestionId(), req.getStudentId());
-                                Update update = updateQuery(req.getChapterId(), "", "", "", req.getQuestionId(), req.getStudentId());
+                                Criteria criteria = buildCriteriaQuestionId(req.getChapterId(), req.getCourseId(), "", req.getQuestionId(), req.getStudentId());
+                                Update update = updateQuery(req.getChapterId(), "", req.getCourseId(), "", req.getQuestionId(), req.getStudentId());
                                 update.set("right", b);
                                 update.set("stuAnswer", req.getStuAnswer());
                                 update.set("bigQuestion", questionAnswer);
@@ -225,7 +225,7 @@ public class StudentAnswerService {
     }
 
     private Mono<Boolean> addQuestionsAnswer(final AnswerReq req, final Boolean right) {
-        Criteria criteria = buildCriteria(req.getChapterId(), "", "", req.getStudentId());
+        Criteria criteria = buildCriteria(req.getChapterId(), req.getCourseId(), "", req.getStudentId());
         Mono<QuestionsLists> questionsListsMono = reactiveMongoTemplate.findOne(Query.query(criteria), QuestionsLists.class)
                 .switchIfEmpty(Mono.just(new QuestionsLists()));
         Mono<Long> setMono = questionsListsMono.filter(Objects::nonNull)

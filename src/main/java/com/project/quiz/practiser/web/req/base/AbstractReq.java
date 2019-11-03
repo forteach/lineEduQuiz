@@ -13,8 +13,8 @@ import lombok.Data;
 @Data
 public abstract class AbstractReq {
 
-//    @ApiModelProperty(name = "courseId", value = "课程id", dataType = "string", required = true)
-//    private String courseId;
+    @ApiModelProperty(name = "courseId", value = "课程id", dataType = "string", required = true)
+    private String courseId;
 
     @ApiModelProperty(name = "chapterId", value = "章节id", dataType = "string", required = true)
     private String chapterId;

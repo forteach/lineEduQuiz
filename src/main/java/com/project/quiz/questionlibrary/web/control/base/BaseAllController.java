@@ -49,20 +49,20 @@ public abstract class BaseAllController<T extends AbstractExam> {
     @ApiOperation(value = "编辑保存题信息")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "id", name = "id", example = "传入id为修改  不传id为新增", dataType = "string", paramType = "form"),
-            @ApiImplicitParam(value = "章节id", name = "chapterId", dataType = "string", paramType = "form"),
-            @ApiImplicitParam(value = "章节名称", name = "chapterName", dataType = "string", paramType = "form"),
-            @ApiImplicitParam(value = "课程id", name = "courseId", dataType = "string", paramType = "form"),
-            @ApiImplicitParam(value = "课程名称", name = "courseName", dataType = "string", paramType = "form"),
+            @ApiImplicitParam(value = "章节id", name = "chapterId", dataType = "string", paramType = "form", required = true),
+            @ApiImplicitParam(value = "章节名称", name = "chapterName", dataType = "string", paramType = "form", required = true),
+            @ApiImplicitParam(value = "课程id", name = "courseId", dataType = "string", paramType = "form", required = true),
+            @ApiImplicitParam(value = "课程名称", name = "courseName", dataType = "string", paramType = "form", required = true),
             @ApiImplicitParam(value = "题目分数", name = "score", dataType = "number", example = "2.0", paramType = "form"),
-            @ApiImplicitParam(value = "老师id", name = "teacherId", paramType = "form"),
-            @ApiImplicitParam(value = "老师名称", name = "teacherName", paramType = "form"),
+            @ApiImplicitParam(value = "老师id", name = "teacherId", paramType = "form", required = true),
+            @ApiImplicitParam(value = "老师名称", name = "teacherName", paramType = "form", required = true),
             @ApiImplicitParam(value = "考题类型  single  multiple trueOrFalse ", name = "examType", required = true, example = "single", paramType = "form"),
             @ApiImplicitParam(value = "题目题干", name = "choiceQstTxt", example = "1+1 = ?", paramType = "form"),
             @ApiImplicitParam(value = "题目答案", name = "answer", example = "A", paramType = "form"),
             @ApiImplicitParam(value = "题目解析", name = "analysis", example = "A选项正确", paramType = "form"),
             @ApiImplicitParam(value = "难易度id", name = "levelId", example = "0", paramType = "form"),
-            @ApiImplicitParam(name = "centerAreaId", value = "学习中心Id", dataType = "string", paramType = "form"),
-            @ApiImplicitParam(name = "centerName", value = "学习中心名称", dataType = "string", paramType = "form"),
+            @ApiImplicitParam(name = "centerAreaId", value = "学习中心Id", dataType = "string", paramType = "form", required = true),
+            @ApiImplicitParam(name = "centerName", value = "学习中心名称", dataType = "string", paramType = "form", required = true),
 //            @ApiImplicitParam(value = "单选与多选区分 single  multiple", name = "choiceType, 只有是选择题才传值", dataType = "string", example = "single", paramType = "form"),
             @ApiImplicitParam(value = "选项集", name = "optChildren", example = "single 只有是选择题才传值", dataTypeClass = List.class, paramType = "form")
     })
@@ -74,6 +74,7 @@ public abstract class BaseAllController<T extends AbstractExam> {
         MyAssert.isNull(bigQuestion.getCourseId(), DefineCode.ERR0010, "章节Id不为空");
         MyAssert.isNull(bigQuestion.getCourseName(), DefineCode.ERR0010, "章节名称不为空");
         MyAssert.isNull(bigQuestion.getCenterAreaId(), DefineCode.ERR0010, "学习中心不为空");
+        MyAssert.isNull(bigQuestion.getExamType(), DefineCode.ERR0010, "考题类型不为空");
         MyAssert.isTrue(StrUtil.isBlank(bigQuestion.getCenterAreaId()), DefineCode.ERR0010, "学习中心Id不能为空");
         MyAssert.isNull(bigQuestion.getCenterName(), DefineCode.ERR0010, "学习中心名称不为空");
         tokenService.getTeacherId(request).ifPresent(bigQuestion::setTeacherId);
