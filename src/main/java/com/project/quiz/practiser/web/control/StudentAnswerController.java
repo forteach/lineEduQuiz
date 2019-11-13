@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
+
+import static com.project.quiz.common.Dic.WECHAT_ROLE_ID_TEACHER;
 import static com.project.quiz.web.vo.ValideSortVo.valideSort;
 
 /**
@@ -55,6 +57,7 @@ public class StudentAnswerController {
             @ApiImplicitParam(name = "courseId", value = "课程id", dataType = "string", required = true, paramType = "form"),
             @ApiImplicitParam(name = "chapterId", value = "章节id", dataType = "string", required = true, paramType = "form"),
             @ApiImplicitParam(name = "questionId", value = "问题id", dataType = "string", required = true, paramType = "form"),
+            @ApiImplicitParam(name = "roleId", value = "角色Id, 0 教师 1学生", dataType = "string", required = true, paramType = "form"),
 //            @ApiImplicitParam(name = "chapterName", value = "章节名称", dataType = "string", required = true, paramType = "form"),
             @ApiImplicitParam(name = "stuAnswer", value = "回答内容", required = true, paramType = "form"),
 //            @ApiImplicitParam(name = "classId", value = "班级id", required = true, paramType = "form"),
@@ -64,8 +67,11 @@ public class StudentAnswerController {
         answerVerify.verifyChapterId(req.getCourseId(), req.getChapterId());
         MyAssert.isNull(req.getQuestionId(), DefineCode.ERR0010, "题目id不为空");
         MyAssert.isNull(req.getStuAnswer(), DefineCode.ERR0010, "答案不为空");
-//        MyAssert.isNull(req.getChapterName(), DefineCode.ERR0010, "章节名称不为空");
+        MyAssert.isNull(req.getRoleId(), DefineCode.ERR0010, "角色Id不为空");
         req.setStudentId(tokenService.getStudentId(request));
+        if(WECHAT_ROLE_ID_TEACHER.equals(req.getRoleId())) {
+            return Mono.empty().map(WebResult::okResult);
+        }
         return studentAnswerService.saveStudentAnswer(req).map(WebResult::okResult);
     }
 
@@ -114,15 +120,20 @@ public class StudentAnswerController {
             @ApiImplicitParam(value = "章节id", name = "chapterId", example = "章节id", dataType = "string", required = true, paramType = "query"),
             @ApiImplicitParam(value = "课程id", name = "courseId", example = "课程id", dataType = "string", required = true, paramType = "query"),
             @ApiImplicitParam(value = "班级id", name = "classId", example = "班级id", dataType = "string", required = true, paramType = "query"),
+            @ApiImplicitParam(name = "roleId", value = "角色Id, 0 教师 1学生", dataType = "string", required = true, paramType = "query"),
             @ApiImplicitParam(name = "number", value = "随机题目数量", dataType = "int", required = true, paramType = "query")
     })
     @PostMapping("/findQuestions")
     public Mono<WebResult> findExerciseBook(@RequestBody StudentFindQuestionsReq req, ServerHttpRequest request) {
         answerVerify.verifyChapterId(req.getCourseId(), req.getChapterId());
+        MyAssert.isNull(req.getRoleId(), DefineCode.ERR0010, "角色Id不为空");
         if (req.getNumber() == null){
             req.setNumber(5);
         }
         req.setStudentId(tokenService.getStudentId(request));
+        if(WECHAT_ROLE_ID_TEACHER.equals(req.getRoleId())) {
+            return studentAnswerService.randomBigQuestions(req).map(WebResult::okResult);
+        }
         return studentAnswerService.findStudentQuestions(req).map(WebResult::okResult);
     }
 }

@@ -133,4 +133,10 @@ public class Dic {
     public static final String VERIFY_STATUS_AGREE = "0";
     public static final String VERIFY_STATUS_APPLY = "1";
     public static final String VERIFY_STATUS_REFUSE = "2";
+
+    /**
+     * 教师信息 roleId 0 studentId 1
+     */
+    public static final String WECHAT_ROLE_ID_TEACHER = "0";
+    public static final String WECHAT_ROLE_ID_STUDENT = "1";
 }

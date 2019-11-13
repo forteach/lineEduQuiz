@@ -28,6 +28,8 @@ public class AnswerReq extends AbstractReq implements Serializable {
 
     @ApiModelProperty(name = "stuAnswer", value = "回答内容", dataType = "string", required = true)
     private String stuAnswer;
+    @ApiModelProperty(name = "roleId", value = "角色Id, 0 教师 1学生", dataType = "string", required = true)
+    public String roleId;
 
     /**
      * 回答的学生

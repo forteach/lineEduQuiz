@@ -85,9 +85,9 @@ public class StudentAnswerService {
      * 随机获取学生要回答的题目信息
      *
      * @param req
-     * @return
+     * @return Mono<List<QuestionAnswer>>
      */
-    private Mono<List<QuestionAnswer>> randomBigQuestions(final StudentFindQuestionsReq req) {
+    public Mono<List<QuestionAnswer>> randomBigQuestions(final StudentFindQuestionsReq req) {
         //使用mongoDB 随机题目
         Criteria criteria =createCriteria(req.getChapterId(), req.getCourseId());
         criteria.and("verifyStatus").is(VERIFY_STATUS_AGREE);
@@ -99,12 +99,6 @@ public class StudentAnswerService {
                     return questionAnswer;
                 })
                 .collectList();
-//        return list.flatMapMany(Flux::fromIterable)
-//                .map(bigQuestion -> {
-//                    QuestionAnswer questionAnswer = new QuestionAnswer();
-//                    BeanUtil.copyProperties(bigQuestion, questionAnswer);
-//                    return questionAnswer;
-//                }).collectList();
     }
 
     /**
@@ -123,12 +117,6 @@ public class StudentAnswerService {
                 .map(UpdateResult::wasAcknowledged)
                 .flatMap(r -> MyAssert.isFalse(r, DefineCode.ERR0012, "保存失败"));
     }
-
-//    private QuestionAnswer setAnswerIsNull(QuestionAnswer questionAnswer) {
-//        questionAnswer.setAnalysis("");
-//        questionAnswer.setAnswer("");
-//        return questionAnswer;
-//    }
 
     /**
      * 查询学生需要回答习题信息，如果没有快照，去获取随机题库获取题目集合

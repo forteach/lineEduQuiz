@@ -34,9 +34,10 @@ public class StudentFindQuestionsReq implements Serializable {
 
     @ApiModelProperty(hidden = true)
     private String studentId;
+    @ApiModelProperty(name = "roleId", value = "角色Id, 0 教师 1学生", dataType = "string", required = true)
+    public String roleId;
 
     public String getKey(){
-//        return STUDENT_QUESTIONS.concat(studentId).concat("#").concat(courseId).concat("#").concat(chapterId);
         return STUDENT_QUESTIONS.concat(studentId).concat("#").concat(chapterId);
     }
 }
