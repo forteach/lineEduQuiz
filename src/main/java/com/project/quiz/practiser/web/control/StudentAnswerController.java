@@ -68,10 +68,10 @@ public class StudentAnswerController {
         MyAssert.isNull(req.getQuestionId(), DefineCode.ERR0010, "题目id不为空");
         MyAssert.isNull(req.getStuAnswer(), DefineCode.ERR0010, "答案不为空");
         MyAssert.isNull(req.getRoleId(), DefineCode.ERR0010, "角色Id不为空");
-        req.setStudentId(tokenService.getStudentId(request));
         if(WECHAT_ROLE_ID_TEACHER.equals(req.getRoleId())) {
-            return Mono.empty().map(WebResult::okResult);
+            return Mono.just(WebResult.okResult());
         }
+        req.setStudentId(tokenService.getStudentId(request));
         return studentAnswerService.saveStudentAnswer(req).map(WebResult::okResult);
     }
 
@@ -130,10 +130,10 @@ public class StudentAnswerController {
         if (req.getNumber() == null){
             req.setNumber(5);
         }
-        req.setStudentId(tokenService.getStudentId(request));
         if(WECHAT_ROLE_ID_TEACHER.equals(req.getRoleId())) {
             return studentAnswerService.randomBigQuestions(req).map(WebResult::okResult);
         }
+        req.setStudentId(tokenService.getStudentId(request));
         return studentAnswerService.findStudentQuestions(req).map(WebResult::okResult);
     }
 }
