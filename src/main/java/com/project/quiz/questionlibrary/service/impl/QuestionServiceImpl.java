@@ -262,6 +262,7 @@ public class QuestionServiceImpl<T extends AbstractExam> implements QuestionServ
     }
 
     @Override
+    @SuppressWarnings(value = "all")
     public Mono<Boolean> editBigQuestion(BigQuestion bigQuestion) {
         return Mono.just(bigQuestion).flatMap(b -> {
             if (StrUtil.isBlank(b.getId())) {
@@ -279,6 +280,7 @@ public class QuestionServiceImpl<T extends AbstractExam> implements QuestionServ
      * @param b
      * @return
      */
+    @SuppressWarnings(value = "all")
     private Mono<Boolean> saveRedisHash(final BigQuestion b) {
         Map<String, String> map = CollUtil.newHashMap();
         map.put("questionId", b.getId());
