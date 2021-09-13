@@ -82,7 +82,7 @@
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
+            <version>3.0.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>io.swagger</groupId>
@@ -102,12 +102,12 @@
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
+            <version>3.0.0</version>
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-spring-webflux</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
+            <version>3.0.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework.plugin</groupId>
@@ -137,16 +137,16 @@
     </dependencies>
 
     <!-- 配置远程仓库 -->
-    <repositories>
-        <repository>
-            <id>oss-snapshot</id>
-            <name>OSS Snapshot</name>
-            <url>http://oss.jfrog.org/oss-snapshot-local</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
+<!--    <repositories>-->
+<!--        <repository>-->
+<!--            <id>oss-snapshot</id>-->
+<!--            <name>OSS Snapshot</name>-->
+<!--            <url>http://oss.jfrog.org/oss-snapshot-local</url>-->
+<!--            <snapshots>-->
+<!--                <enabled>true</enabled>-->
+<!--            </snapshots>-->
+<!--        </repository>-->
+<!--    </repositories>-->
 
 
     <build>
